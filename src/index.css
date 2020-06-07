@@ -1,13 +1,185 @@
-body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+* {
+  box-sizing: border-box;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+body{
+  margin: 0;
+  font-family: 'Source Sans Pro', sans-serif;
+  font-size: 1.125rem;
+  color: #404040;
+  text-align: center;
+  
+  
+}
+
+.login-page{
+  display: flex;
+  justify-content: space-between;
+}
+
+.intro {
+  background-color:white;
+  background-image: url(./images/loginpageimg.jpg);
+  background-size: cover;
+  background-position: center;
+  /* border: 1px solid;  */
+  height: 100vh; 
+  width: 70%; 
+}
+
+
+
+.main-content {
+  padding: 2em 1em;
+  margin: 0 auto;
+  width: 30%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 7em
+  /* justify-content: center; */
+
+}
+
+.login-form {
+  margin: 0 auto;
+  width: 80%;
+}
+
+
+.login-form-name,
+.login-form-api,
+.btn-login {
+  width: 100%;
+  border-radius: 5px;
+  
+}
+
+.login-form-name,
+.login-form-api{
+  margin-bottom: .75em;
+  font-family: inherit;
+  text-align: inherit;
+  border: 1px solid #404040;
+}
+
+.btn-login {
+  color: white;
+  background: #141414;
+  display: inline-block;
+  padding: 1em 1.5em;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border: 0;
+  cursor: pointer;
+}
+
+/* Home Page*/
+
+
+
+
+
+header {
+  
+  padding: 0;
+  padding-bottom: 0;
+  border-bottom: 1px solid;
+  position: sticky;
+  top: 0px;
+  background-color: #fff;
+}
+
+.container {
+  width: 99%;    
+
+  padding: 0;
+}
+
+.nav-account-info{
+  /* width: 270px; */
+  width: 20.6%;
+  padding-left: 0.5em;
+  
+  /* border: 1px solid; */
+}
+
+.container-nav {
+  display: flex;   
+  justify-content: space-between;
+ 
+}
+
+.nav-account-info-ul
+{
+  
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.nav-account-info-li{
+
+  display: flex;
+  padding: 0;
+  margin: 0;
+  justify-content: space-between;
+}
+
+.nav-tab{
+  padding: 0;
+}
+
+.nav-tabs-ul{
+  list-style: none;
+  display: flex;
+  padding-top: 1em;
+  
+}
+
+.nav-tabs-li{
+  padding-left: 2em;
+}
+
+.main-info{
+  display: flex;
+  justify-content: space-between;
+  padding-left: 0.5em;
+}
+
+.watchlist{
+  border: 1px solid;
+  width: 20%;
+  height: 100vh;
+  
+  /* background-color: pink; */
+}
+
+.main-info-details{
+  border: 1px solid;
+  width: 80%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+
+}
+.getquote{
+  border: 1px solid;
+  width: 25%;
+  height: 10vh;
+}
+
+.quotedetails{
+  border: 1px solid;
+  width: 50%;
+  height: 30vh;
+}
+
+.chart-container{
+  border: 1px solid;
+  width: 100%;
+  height: 50vh;
 }
