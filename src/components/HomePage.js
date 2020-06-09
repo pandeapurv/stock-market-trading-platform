@@ -1,20 +1,49 @@
 import React, { useContext, useState, useEffect }  from 'react';
 import { UserContext } from '../contexts/UserContext'
 const HomePage = () => {
-    const {user, dispatch } = useContext(UserContext);
-
+    const {user, dispatch  } = useContext(UserContext);
+    const { watchList, socket, userName, apiKey,watchlistDetails } = user
     const [serverTime, setServerTime] = useState([]);
+    const [quote, setQuote] = useState([])
     //EURUSD
-    useEffect(() => {
-        console.log(user.connectSockt)
-        if(user.connectSockt){
-            console.log('useEffext')
-            user.socket.on("timer", users => {
-                setServerTime(users);
-            }); 
-            user.socket.emit('subscribeToTimer', 1000);
-            dispatch({ type: 'TOGGLESOCKETSUB', user: { connectSockt:false }});
+    useEffect( () => {
+        // async function fetchData() {
+        //     console.log('hello')
+        //     let response = await fetch('http://localhost:5000/api/tiingo/stock/quote/aapl')
+        //     let res = await response.json()
+        //     //let dataObj =  JSON.parse(res.response)
+           
+        //     console.log(res.response[0].last)
+        // }
+        // fetchData();
+
+        watchList.forEach(
+            ticker => socket.on(ticker, function(data){
+                console.log('ticker',ticker)
+                console.log('response',data)
+            })
+        )
+        
+        return function cleanup() {
+            console.log('cleanup')
+            watchList.forEach(
+                ticker => 
+                socket.emit('unsubscribeWatchList', {
+                    ticker,
+                    userName,
+                    apiKey,
+                }));
+            socket.close()
         }
+       
+        // if(user.connectSockt){
+        //     console.log('useEffext')
+        //     user.socket.on("timer", users => {
+        //         setServerTime(users);
+        //     }); 
+        //     user.socket.emit('subscribeToTimer', 1000);
+        //     dispatch({ type: 'TOGGLESOCKETSUB', user: { connectSockt:false }});
+        // }
        
       }, []);
     return ( 

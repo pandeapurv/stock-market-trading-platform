@@ -9,6 +9,8 @@ export const userDetailsReducer = (state, action) => {
                 userName : action.user.userName,
                 apiKey : action.user.apiKey,
                 socket : action.user.socket,
+                watchList : action.user.watchList,
+                watchlistDetails : action.user.watchlistDetails,
                 id : uuidv4(),
             }
         case 'TOGGLESOCKETSUB' :

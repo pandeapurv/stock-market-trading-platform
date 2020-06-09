@@ -23,15 +23,32 @@ const LoginPage = (props) => {
 
     const [userName, setUserName] = useState('')
     const [apiKey, setApiKey] = useState('')
+    const [watchList, setWatchList] = useState(['AAPL','AMZN','IXIC'])
 
     const handleSubmit = (e) => {
         e.preventDefault();
         console.log('login', userName)
+        //setWatchList(['AAPL','AMZN','IXIC'])
         
-        const socket = io("http://localhost:4000", {
+        const socket = io("http://localhost:5000", {
             transports: ["websocket", "polling"]
           });
-        dispatch({ type: 'LOGIN', user: { userName, apiKey, socket }});
+        
+        
+        
+
+        dispatch({ type: 'LOGIN', user: { userName, apiKey
+            , socket , watchList
+        }});
+        console.log('wathclist',watchList)
+        watchList.forEach(
+            ticker => 
+            socket.emit('subscribeWatchList', {
+                ticker,
+                userName,
+                apiKey,
+            }));
+
         props.history.push('/home')
     }
     return ( 
