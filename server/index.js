@@ -5,10 +5,6 @@ const cors = require('cors')
 var socket = require('socket.io');
 const tiingoapis = require('./routes/tiingoapi')
 
-
-
-
-
 //set up express
 const app = express()
 
@@ -33,18 +29,18 @@ io.on('connection', (socket) => {
         //myMap.set('bla2','blaa2')
         //myMap.delete('bla')
         console.log('made socket connection', socket.id); 
-        let roomid = `${socket.id}-${roomObj.ticker}`
-        console.log('joining room', roomid);
+        let roomid = `${roomObj.userId}-${roomObj.ticker}`
+        //console.log('joining room', roomid);
         app.locals.roomMap.set(roomid,arr)
-        socket.join(roomObj.roomid); 
+        //socket.join(roomObj.roomid); 
     })
     
-    socket.on('unsubscribeWatchList', function(roomObj) {  
-        console.log('leaving room', roomObj);
-        let roomid = `${socket.id}-${roomObj.ticker}`
-        console.log('leaving room', roomid);
-        socket.leave(roomid); 
-    })
+    // socket.on('unsubscribeWatchList', function(roomObj) {  
+    //     console.log('leaving room', roomObj);
+    //     let roomid = `${socket.id}-${roomObj.ticker}`
+    //     console.log('leaving room', roomid);
+    //     socket.leave(roomid); 
+    // })
 
 });
 
@@ -67,12 +63,32 @@ setInterval( async function(){
             console.log('socketId disconnected',socketId)
 
         }else{
-            console.log(socketId)
-            // let ticker = value[0]
-            // let apiKey = value[1]
-            // //const response = await tiingoapis.getStockQuote(ticker,apiKey);
-            // //console.log(response)
-            // io.sockets.in(key).emit(ticker,'response')
+            console.log('else',key)
+            let ticker = value[0]
+            let apiKey = value[1]
+           // const response = await tiingoapis.getStockQuote(ticker,apiKey);
+            var d = new Date();
+            const response = [ { last: 333 * d.getSeconds(),
+                bidPrice: null,
+                quoteTimestamp: '2020-06-08T20:00:00+00:00',
+                mid: null,
+                open: 330.25,
+                timestamp: '2020-06-08T20:00:00+00:00',
+                tngoLast: 333.46,
+                lastSize: null,
+                askSize: null,
+                ticker: 'AAPL',
+                askPrice: null,
+                low: 327.32,
+                volume: 23913634,
+                prevClose: 331.5,
+                bidSize: null,
+                lastSaleTimestamp: '2020-06-08T20:00:00+00:00',
+                high: 333.6 } ]
+            //console.log(response)
+            console.log('type of response', typeof response)
+            io.sockets.emit(key, response);
+            //io.sockets.in(key).emit(ticker,'response')
         }
     
         

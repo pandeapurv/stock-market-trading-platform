@@ -1,10 +1,20 @@
-import React, { useContext, useState, useEffect }  from 'react';
+import React, { useContext, useState, useEffect, useRef }  from 'react';
 import { UserContext } from '../contexts/UserContext'
+import Watchlist from './WatchList'
+import io from "socket.io-client";
+
 const HomePage = () => {
     const {user, dispatch  } = useContext(UserContext);
-    const { watchList, socket, userName, apiKey,watchlistDetails } = user
+    const userRef = useRef(user);
     const [serverTime, setServerTime] = useState([]);
     const [quote, setQuote] = useState([])
+
+    React.useEffect(() => {
+        userRef.current = user;
+    });
+
+    
+
     //EURUSD
     useEffect( () => {
         // async function fetchData() {
@@ -17,12 +27,42 @@ const HomePage = () => {
         // }
         // fetchData();
 
+        
+        let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
+
+        
+
         watchList.forEach(
-            ticker => socket.on(ticker, function(data){
-                console.log('ticker',ticker)
-                console.log('response',data)
-            })
-        )
+            ticker => 
+            socket.emit('subscribeWatchList', {
+                ticker,
+                userName,
+                apiKey,
+                userId : userRef.current.id
+            }));
+
+        //dispatch({ type: 'UPDATEWATCHLIST', user: { watchList, }});
+
+        watchList.forEach(
+            ticker =>
+        socket.on(`${id}-${ticker}`, function(data){
+            let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
+            let watchlistDetail = new Object();
+            watchlistDetail.symbol = data[0].ticker
+            watchlistDetail.price = data[0].last.toFixed(2)
+            watchlistDetail.low = data[0].low.toFixed(2)
+            watchlistDetail.high = data[0].high.toFixed(2)
+            watchlistDetail.volume = data[0].volume
+            watchlistDetail.daygain = ((watchlistDetail.price - data[0].prevClose)/ watchlistDetail.price) * 100
+            watchlistDetail.daygain= watchlistDetail.daygain.toFixed(2);
+            const found = watchlistDetails.some(el => el.symbol === watchlistDetail.symbol);
+
+            if(found){
+                dispatch({ type: 'UPDATEWATCHLISTDETAILS', user: { watchlistDetail,  }});
+            }else{
+                dispatch({ type: 'ADDTOWATCHLISTDETAILS', user: { watchlistDetail, }});
+            }
+        }))
         
         return function cleanup() {
             console.log('cleanup')
@@ -46,6 +86,10 @@ const HomePage = () => {
         // }
        
       }, []);
+
+
+
+     
     return ( 
            
             <React.Fragment>
@@ -85,6 +129,7 @@ const HomePage = () => {
     <div className="container main-info">
         <div className="watchlist">
                 <h1>watchlist</h1>
+                <Watchlist/>
         </div>
         <div className="main-info-details">
             <div className="getquote">Get quote</div>
