@@ -54,7 +54,7 @@ app.use(function(req,res,next){
 app.use('/api',routes)
 
 setInterval( async function(){
-    console.log('hello')
+    //console.log('hello')
     let socketList = io.sockets.server.eio.clients;
     for(const [key, value] of app.locals.roomMap.entries()){
         let socketId = value[2]
@@ -66,25 +66,26 @@ setInterval( async function(){
             console.log('else',key)
             let ticker = value[0]
             let apiKey = value[1]
-           // const response = await tiingoapis.getStockQuote(ticker,apiKey);
-            var d = new Date();
-            const response = [ { last: 333 * d.getSeconds(),
-                bidPrice: null,
-                quoteTimestamp: '2020-06-08T20:00:00+00:00',
-                mid: null,
-                open: 330.25,
-                timestamp: '2020-06-08T20:00:00+00:00',
-                tngoLast: 333.46,
-                lastSize: null,
-                askSize: null,
-                ticker: 'AAPL',
-                askPrice: null,
-                low: 327.32,
-                volume: 23913634,
-                prevClose: 331.5,
-                bidSize: null,
-                lastSaleTimestamp: '2020-06-08T20:00:00+00:00',
-                high: 333.6 } ]
+           //const response = await tiingoapis.getStockQuote(ticker,apiKey);
+           const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
+            let d = new Date();
+            // const response = [ { last: 333 * d.getSeconds(),
+            //     bidPrice: null,
+            //     quoteTimestamp: '2020-06-08T20:00:00+00:00',
+            //     mid: null,
+            //     open: 330.25,
+            //     timestamp: '2020-06-08T20:00:00+00:00',
+            //     tngoLast: 333.46,
+            //     lastSize: null,
+            //     askSize: null,
+            //     ticker: 'AAPL',
+            //     askPrice: null,
+            //     low: 327.32,
+            //     volume: 23913634,
+            //     prevClose: 331.5,
+            //     bidSize: null,
+            //     lastSaleTimestamp: '2020-06-08T20:00:00+00:00',
+            //     high: 333.6 } ]
             //console.log(response)
             console.log('type of response', typeof response)
             io.sockets.emit(key, response);

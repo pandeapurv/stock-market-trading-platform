@@ -19,6 +19,7 @@ export const userDetailsReducer = (state, action) => {
                 connectSockt:false
             }
         case 'ADDTOWATCHLIST' :
+            console.log('addtowatchlist')
             return {
                 ...state,
                 watchList : [...state.watchList, action.user.watchListTicker], 

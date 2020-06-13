@@ -42,7 +42,7 @@ const HomePage = () => {
             }));
 
         //dispatch({ type: 'UPDATEWATCHLIST', user: { watchList, }});
-
+            //console.log('watchlist lsit',watchList)
         watchList.forEach(
             ticker =>
         socket.on(`${id}-${ticker}`, function(data){
@@ -52,7 +52,7 @@ const HomePage = () => {
             watchlistDetail.price = data[0].last.toFixed(2)
             watchlistDetail.low = data[0].low.toFixed(2)
             watchlistDetail.high = data[0].high.toFixed(2)
-            watchlistDetail.volume = data[0].volume
+            watchlistDetail.volume = data[0].volume.toFixed(2)
             watchlistDetail.daygain = ((watchlistDetail.price - data[0].prevClose)/ watchlistDetail.price) * 100
             watchlistDetail.daygain= watchlistDetail.daygain.toFixed(2);
             const found = watchlistDetails.some(el => el.symbol === watchlistDetail.symbol);
