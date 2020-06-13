@@ -8,25 +8,23 @@ const Watchlist = () => {
 
     const [addSymbol, setAddSymbol] = useState('')
     const userRef = useRef(user);
+   // const dispatchRef = useRef(dispatch)
     //console.log('watchlistDetails page', watchlistDetails)
 
     React.useEffect(() => {
         userRef.current = user;
     });
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
-        dispatch({ type: 'ADDTOWATCHLIST', user: { watchListTicker:addSymbol,}});
-        socket.emit('subscribeWatchList', {
-            ticker: addSymbol,
-            userName,
-            apiKey,
-            userId : user.id
-        })
+    // useEffect( () => {
+    //     console.log('iniitail render',user.watchlistDetails)
+    //     console.log('iniitail renderuserRef.current',userRef.current.watchlistDetails)
+    // },[userRef.current.watchList])
 
-        socket.on(`${id}-${addSymbol}`, function(data){
-           // console.log('hsds')
+    useEffect( () => {
+        let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
+        watchList.forEach(
+            ticker =>
+        socket.on(`${id}-${ticker}`, function(data){
             let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
             let watchlistDetail = new Object();
             watchlistDetail.symbol = data[0].ticker
@@ -41,21 +39,65 @@ const Watchlist = () => {
             if(found){
                 dispatch({ type: 'UPDATEWATCHLISTDETAILS', user: { watchlistDetail,  }});
             }else{
-                dispatch({ type: 'ADDTOWATCHLISTDETAILS', user: { watchlistDetail, }});
+                watchlistDetails.push(watchlistDetail)
+                dispatch({ type: 'ADDTOWATCHLISTDETAILS', user: { watchlistDetails, }});
             }
+        }))
+    },[userRef.current.watchList])
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
+        console.log('handle submit')
+        dispatch({ type: 'ADDTOWATCHLIST', user: { watchListTicker:addSymbol,}});
+        socket.emit('subscribeWatchList', {
+            ticker: addSymbol,
+            userName,
+            apiKey,
+            userId : user.id
         })
+
+        
+
+
+
+        // socket.on(`${id}-${addSymbol}`, function(data){
+        //    // console.log('hsds')
+        //     let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
+        //     let watchlistDetail = new Object();
+        //     watchlistDetail.symbol = data[0].ticker
+        //     watchlistDetail.price = data[0].last.toFixed(2)
+        //     watchlistDetail.low = data[0].low.toFixed(2)
+        //     watchlistDetail.high = data[0].high.toFixed(2)
+        //     watchlistDetail.volume = data[0].volume.toFixed(2)
+        //     watchlistDetail.daygain = ((watchlistDetail.price - data[0].prevClose)/ watchlistDetail.price) * 100
+        //     watchlistDetail.daygain= watchlistDetail.daygain.toFixed(2);
+        //     const found = watchlistDetails.some(el => el.symbol === watchlistDetail.symbol);
+
+        //     if(found){
+        //         dispatch({ type: 'UPDATEWATCHLISTDETAILS', user: { watchlistDetail,  }});
+        //     }else{
+        //         dispatch({ type: 'ADDTOWATCHLISTDETAILS', user: { watchlistDetail, }});
+        //     }
+        // })
+
+        
     }
 
     const removeSymbol = (symbol,e) => {
         console.log(symbol)
         dispatch({ type: 'REMOVEFROMWATCHLIST', user: { watchListTicker:symbol,}});
+        dispatch({ type: 'REMOVEFROMWATCHLISTDETAILS', user: { watchlistDetailTicker:symbol,}});
         let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
-        socket.emit('subscribeWatchList', {
+        socket.emit('unsubscribeWatchList', {
             ticker: symbol,
             userName,
             apiKey,
             userId : user.id
         })
+
+        
+        console.log('watchlistDetails',watchlistDetails)
     }
 
     return (  

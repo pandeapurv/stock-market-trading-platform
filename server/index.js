@@ -28,19 +28,30 @@ io.on('connection', (socket) => {
         let arr = [roomObj.ticker, roomObj.apiKey,socket.id]
         //myMap.set('bla2','blaa2')
         //myMap.delete('bla')
-        console.log('made socket connection', socket.id); 
+        console.log('subscribeWatchList', socket.id); 
         let roomid = `${roomObj.userId}-${roomObj.ticker}`
+        console.log('subscribeWatchList ticker', roomid); 
         //console.log('joining room', roomid);
         app.locals.roomMap.set(roomid,arr)
         //socket.join(roomObj.roomid); 
     })
     
-    // socket.on('unsubscribeWatchList', function(roomObj) {  
-    //     console.log('leaving room', roomObj);
-    //     let roomid = `${socket.id}-${roomObj.ticker}`
-    //     console.log('leaving room', roomid);
-    //     socket.leave(roomid); 
-    // })
+    socket.on('unsubscribeWatchList', function(roomObj) {  
+        console.log('unsubscribeWatchList from watchlist');
+        let roomid = `${roomObj.userId}-${roomObj.ticker}`
+        console.log('leaving room', roomid);
+        for(const [key, value] of app.locals.roomMap.entries()){
+            console.log('key',key)  
+            console.log('value',value)  
+        }
+        app.locals.roomMap.delete(roomid)
+       // socket.leave(roomid); 
+       console.log('---------------')
+       for(const [key, value] of app.locals.roomMap.entries()){
+        console.log('key',key)  
+        console.log('value',value)  
+    }
+    })
 
 });
 
@@ -56,14 +67,16 @@ app.use('/api',routes)
 setInterval( async function(){
     //console.log('hello')
     let socketList = io.sockets.server.eio.clients;
+    let disabledSocketEvents = []
     for(const [key, value] of app.locals.roomMap.entries()){
         let socketId = value[2]
         
         if(socketList[socketId] === undefined){
             console.log('socketId disconnected',socketId)
+            disabledSocketEvents.push(key)
 
         }else{
-            console.log('else',key)
+            //console.log('else',key)
             let ticker = value[0]
             let apiKey = value[1]
            //const response = await tiingoapis.getStockQuote(ticker,apiKey);
@@ -87,11 +100,15 @@ setInterval( async function(){
             //     lastSaleTimestamp: '2020-06-08T20:00:00+00:00',
             //     high: 333.6 } ]
             //console.log(response)
-            console.log('type of response', typeof response)
+           // console.log('type of response', typeof response)
+           console.log(ticker)
             io.sockets.emit(key, response);
             //io.sockets.in(key).emit(ticker,'response')
         }
+
+       
     
         
     }
+    disabledSocketEvents.forEach(el => app.locals.roomMap.delete(el))
 }, 1000);

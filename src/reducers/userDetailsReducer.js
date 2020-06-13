@@ -19,11 +19,20 @@ export const userDetailsReducer = (state, action) => {
                 connectSockt:false
             }
         case 'ADDTOWATCHLIST' :
-            console.log('addtowatchlist')
+            //console.log('addtowatchlist')
+            //https://github.com/facebook/react/issues/16295 ??
+            if(state.watchList.includes(action.user.watchListTicker)){
+                //console.log("already present")
+                return {
+                    ...state
+                }
+            }
+            console.log('addtowatchlist after')
             return {
                 ...state,
                 watchList : [...state.watchList, action.user.watchListTicker], 
             }
+        
         case 'REMOVEFROMWATCHLIST' :
             return {
                 ...state,
@@ -33,7 +42,7 @@ export const userDetailsReducer = (state, action) => {
             //console.log('inside add to watchlist')
             return {
                 ...state,
-                watchlistDetails : [...state.watchlistDetails , action.user.watchlistDetail]
+                watchlistDetails :  action.user.watchlistDetails,
             }
         case 'UPDATEWATCHLISTDETAILS' :
             return {
@@ -50,10 +59,11 @@ export const userDetailsReducer = (state, action) => {
                          })
                          : el ))
             }
-        case 'REMOVEFROMWATCHLISTDETAILS' : 
+        case 'REMOVEFROMWATCHLISTDETAILS' :
+            console.log('REMOVEFROMWATCHLISTDETAILS',action.user.watchlistDetailTicker)
             return {
                 ...state,
-                watchlistDetails : state.watchlistDetails.filter(el => el.symbol !== action.user.watchlistDetail.symbol)
+                watchlistDetails : state.watchlistDetails.filter(el => el.symbol !== action.user.watchlistDetailTicker)
             }
         default:
             return state

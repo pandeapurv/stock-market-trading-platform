@@ -43,26 +43,26 @@ const HomePage = () => {
 
         //dispatch({ type: 'UPDATEWATCHLIST', user: { watchList, }});
             //console.log('watchlist lsit',watchList)
-        watchList.forEach(
-            ticker =>
-        socket.on(`${id}-${ticker}`, function(data){
-            let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
-            let watchlistDetail = new Object();
-            watchlistDetail.symbol = data[0].ticker
-            watchlistDetail.price = data[0].last.toFixed(2)
-            watchlistDetail.low = data[0].low.toFixed(2)
-            watchlistDetail.high = data[0].high.toFixed(2)
-            watchlistDetail.volume = data[0].volume.toFixed(2)
-            watchlistDetail.daygain = ((watchlistDetail.price - data[0].prevClose)/ watchlistDetail.price) * 100
-            watchlistDetail.daygain= watchlistDetail.daygain.toFixed(2);
-            const found = watchlistDetails.some(el => el.symbol === watchlistDetail.symbol);
+        // watchList.forEach(
+        //     ticker =>
+        // socket.on(`${id}-${ticker}`, function(data){
+        //     let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
+        //     let watchlistDetail = new Object();
+        //     watchlistDetail.symbol = data[0].ticker
+        //     watchlistDetail.price = data[0].last.toFixed(2)
+        //     watchlistDetail.low = data[0].low.toFixed(2)
+        //     watchlistDetail.high = data[0].high.toFixed(2)
+        //     watchlistDetail.volume = data[0].volume.toFixed(2)
+        //     watchlistDetail.daygain = ((watchlistDetail.price - data[0].prevClose)/ watchlistDetail.price) * 100
+        //     watchlistDetail.daygain= watchlistDetail.daygain.toFixed(2);
+        //     const found = watchlistDetails.some(el => el.symbol === watchlistDetail.symbol);
 
-            if(found){
-                dispatch({ type: 'UPDATEWATCHLISTDETAILS', user: { watchlistDetail,  }});
-            }else{
-                dispatch({ type: 'ADDTOWATCHLISTDETAILS', user: { watchlistDetail, }});
-            }
-        }))
+        //     if(found){
+        //         dispatch({ type: 'UPDATEWATCHLISTDETAILS', user: { watchlistDetail,  }});
+        //     }else{
+        //         dispatch({ type: 'ADDTOWATCHLISTDETAILS', user: { watchlistDetail, }});
+        //     }
+        // }))
         
         return function cleanup() {
             console.log('cleanup')
@@ -132,7 +132,9 @@ const HomePage = () => {
                 <Watchlist/>
         </div>
         <div className="main-info-details">
-            <div className="getquote">Get quote</div>
+            <div className="getquote">Get quote
+            
+            </div>
             <div className="quotedetails">quotedetails</div>
             <div className="chart-container">chart</div>
         </div>
