@@ -4,6 +4,8 @@ import { UserContext } from '../contexts/UserContext'
 
 export const ProtectedRoute = ({component: Component, ...rest}) => {
     const {user } = useContext(UserContext);
+    
+    //console.log('component',Component)
     return (
         
         <Route {...rest} render={
@@ -11,6 +13,7 @@ export const ProtectedRoute = ({component: Component, ...rest}) => {
                 if(user.isAuthenticated){
                     return <Component {...props} />
                 }else{
+                    console.log('user',user)
                     return <Redirect
                     to={{
                       pathname: "/",

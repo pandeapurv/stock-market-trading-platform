@@ -12,7 +12,11 @@ export const userDetailsReducer = (state, action) => {
                 socket : action.user.socket,
                 watchList : action.user.watchList,              
                 id : uuidv4(),
-                watchlistDetails : []
+                watchlistDetails : [],
+                totalCash: action.user.accValue,
+                assetWatchList : [],
+                assetDetails : []
+
             }
         case 'TOGGLESOCKETSUB' :
             return {...state,
@@ -44,9 +48,15 @@ export const userDetailsReducer = (state, action) => {
                 ...state,
                 watchlistDetails :  action.user.watchlistDetails,
             }
+        case 'UPDATECASH' : 
+            return {
+                ...state,
+                totalCash : action.user.cash
+            }
         case 'UPDATEWATCHLISTDETAILS' :
             return {
                 ...state,
+                
                 watchlistDetails : 
                 state.watchlistDetails.map(el => (el.symbol ===  action.user.watchlistDetail.symbol 
                          ? Object.assign({}, {
@@ -64,6 +74,32 @@ export const userDetailsReducer = (state, action) => {
             return {
                 ...state,
                 watchlistDetails : state.watchlistDetails.filter(el => el.symbol !== action.user.watchlistDetailTicker)
+            }
+
+        case 'UPDATEASSETWATCHLIST' :
+            return {
+                ...state,
+                assetWatchList : action.user.assetWatchList,
+            }
+        
+        case 'ADDTOASSETDETAILS' : 
+            return {
+                ...state,
+                assetDetails : action.user.assetDetails
+            }
+        
+        case 'UPDATEASSETDETAILS' : 
+            return {
+                ...state,
+                assetDetails : state.assetDetails.map (el => (el.symbol ===  action.user.assetDetail.symbol 
+                ? Object.assign({}, {
+                    symbol: action.user.assetDetail.symbol,
+                    quantity: el.quantity,
+                    buyingPrice: el.buyingPrice,
+                    marketValue: state.marketValue +action.user.assetDetail.quantity * action.user.assetDetail.currPrice, 
+                })
+                : el
+                ))
             }
         default:
             return state
@@ -89,6 +125,17 @@ watchlistDetails : [
         "high" : 450,
         "volume" : 12132332,
         "daygain" : '21%'
+    }
+]
+*/
+
+/*
+assets : [
+    {
+        symbol:
+        quantity:
+        buyingPrice:
+        marketValue:
     }
 ]
 */

@@ -30,8 +30,11 @@ router.delete('/ninjas/:id',function(req,res){
 })
 
 //TINGO
-router.get('/tiingo/stock/quote/:quote', async function(req, res){
+router.get('/tiingo/stock/quote/:quote/:apiKey', async function(req, res){
     const ticker = req.params.quote
+    const apiKey = req.params.apiKey
+    const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
+    console.log('response',response)
     // console.log('socket',req.socket)
     // console.log('io',req.io)
     //res.send({type:'GET'})
@@ -47,7 +50,7 @@ router.get('/tiingo/stock/quote/:quote', async function(req, res){
     // let dataObj =  JSON.parse(resp2.response)
     // console.log('dataObj',dataObj)
     // console.log(typeof dataObj)
-    res.send({response:"response"})
+    res.send({response:response})
     
 })
 

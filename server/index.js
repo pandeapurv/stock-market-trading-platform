@@ -9,6 +9,7 @@ const tiingoapis = require('./routes/tiingoapi')
 const app = express()
 
 app.locals.roomMap = new Map()
+app.locals.assetMap = new Map()
 
 //listen for request
 var server = app.listen(process.env.port ||  5000, function(){
@@ -53,6 +54,32 @@ io.on('connection', (socket) => {
     }
     })
 
+    socket.on('subscribeAssetList', function(roomObj) { 
+
+        let arr = [roomObj.ticker, roomObj.apiKey,socket.id]
+        console.log('assetMap', socket.id); 
+        let roomid = `${roomObj.userId}-${roomObj.ticker}`
+        console.log('assetMap ticker', roomid); 
+        app.locals.assetMap.set(roomid,arr)
+    })
+
+    socket.on('unsubscribeAssetList', function(roomObj) {  
+        console.log('unsubscribeAssetList from watchlist');
+        let roomid = `${roomObj.userId}-${roomObj.ticker}`
+        console.log('leaving room', roomid);
+        for(const [key, value] of app.locals.assetMap.entries()){
+            console.log('key',key)  
+            console.log('value',value)  
+        }
+        app.locals.assetMap.delete(roomid)
+       // socket.leave(roomid); 
+       console.log('---------------')
+       for(const [key, value] of app.locals.roomMap.entries()){
+        console.log('key',key)  
+        console.log('value',value)  
+    }
+    })
+
 });
 
 app.use(function(req,res,next){
@@ -81,34 +108,33 @@ setInterval( async function(){
             let apiKey = value[1]
            //const response = await tiingoapis.getStockQuote(ticker,apiKey);
            const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
-            let d = new Date();
-            // const response = [ { last: 333 * d.getSeconds(),
-            //     bidPrice: null,
-            //     quoteTimestamp: '2020-06-08T20:00:00+00:00',
-            //     mid: null,
-            //     open: 330.25,
-            //     timestamp: '2020-06-08T20:00:00+00:00',
-            //     tngoLast: 333.46,
-            //     lastSize: null,
-            //     askSize: null,
-            //     ticker: 'AAPL',
-            //     askPrice: null,
-            //     low: 327.32,
-            //     volume: 23913634,
-            //     prevClose: 331.5,
-            //     bidSize: null,
-            //     lastSaleTimestamp: '2020-06-08T20:00:00+00:00',
-            //     high: 333.6 } ]
-            //console.log(response)
-           // console.log('type of response', typeof response)
            console.log(ticker)
             io.sockets.emit(key, response);
             //io.sockets.in(key).emit(ticker,'response')
-        }
-
-       
-    
-        
+        }    
     }
     disabledSocketEvents.forEach(el => app.locals.roomMap.delete(el))
+
+
+    //emmit assetlist assetMap
+    let disabledAssetSocketEvents = []
+    for(const [key, value] of app.locals.assetMap.entries()){
+        let socketId = value[2]
+        
+        if(socketList[socketId] === undefined){
+            console.log('socketId disconnected',socketId)
+            disabledSocketEvents.push(key)
+
+        }else{
+            //console.log('else',key)
+            let ticker = value[0]
+            let apiKey = value[1]
+           //const response = await tiingoapis.getStockQuote(ticker,apiKey);
+           const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
+           console.log('assset',ticker)
+            io.sockets.emit(`asset-${key}`, response);
+            //io.sockets.in(key).emit(ticker,'response')
+        }    
+    }
+    disabledAssetSocketEvents.forEach(el => app.locals.assetMap.delete(el))
 }, 1000);

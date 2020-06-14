@@ -164,6 +164,7 @@ header {
   border-collapse: collapse;
   margin-bottom: 1em;
   
+  
   /* border: dotted 0.1px #000000; */
 }
 
@@ -220,11 +221,11 @@ header {
   margin-left:auto;
 }
 
-.quotedetails{
+/* .quotedetails{
   border: 1px solid;
   width: 50%;
   height: 30vh;
-}
+} */
 
 .chart-container{
   border: 1px solid;
@@ -245,13 +246,82 @@ header {
   text-align: left;
   padding-left: 0.2em;
   padding-bottom: 0.2em;
+  
 }
 
-.quotedetails-symbol,
+/*.quotedetails-symbol,
 .quotedetails-lprice {
 font-size: 1.6rem;
 }
-
+*/
 .watchlist-div{
   overflow-x: scroll;
+} 
+
+.subquotedetails{
+  
+  width: 50%;
+  height: 30vh;
+}
+
+.subquotedetails {
+  display: grid;
+  grid-gap: 3px;
+  text-align: left;
+  padding-left: 0.2em;
+  padding-bottom: 0.2em;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: 90px 70px 40px;
+  align-items: top;
+}
+
+.quotedetails-symbol{
+  font-size: 3.5rem;
+}
+.quotedetails-lprice {
+font-size: 2.0rem;
+}
+
+.quotedetails-symbol{
+  grid-column: 1 / 3;
+}
+.quotedetails-change,
+.quotedetails-close{
+  grid-column: 2 / -1;
+}
+
+.quotedetails-change{
+  padding-top: 0.7em
+}
+
+.quotedetails-btn{
+  justify-self: end;
+  padding-right: 0.2em
+}
+
+.trade-div{
+  /* border: 1px solid black; */
+  margin-top: 5em;
+  margin-left: 5em;
+  margin-right: 5em;
+}
+
+.trade-table{
+  font-size: 1rem;
+  margin: 0.2em;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+  
+  
+  /* border: dotted 0.1px #000000; */
+}
+
+.trade-table thead{
+  font-size: 1.5rem
+}
+
+
+.trade-table td {
+  border: 1px solid #dddddd;
+  text-align: left;
 }

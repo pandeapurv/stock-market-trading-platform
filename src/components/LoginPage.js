@@ -26,13 +26,16 @@ const LoginPage = (props) => {
     const [userName, setUserName] = useState('')
     const [apiKey, setApiKey] = useState('')
     const [watchList, setWatchList] = useState(['AAPL','AMZN'])
+    const [accValue, setAccValue] = useState(100000)
+    const [postions, setPostions] = useState(0)
+    const [totalCash, setTotalCash] = useState(100000)
 
     const handleSubmit = (e) => {
         e.preventDefault();
         //setWatchList(['AAPL','AMZN','IXIC'])
         const socket = io("http://localhost:5000");
         dispatch({ type: 'LOGIN', user: { userName, apiKey
-             , watchList, socket
+             , watchList, socket, accValue, postions, totalCash
         }});
         props.history.push('/home')
     }
