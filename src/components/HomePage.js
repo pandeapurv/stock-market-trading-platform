@@ -6,6 +6,9 @@ import TradePage from './TradePage'
 import PortfolioPage from './PortfolioPage'
 import {BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
 import {ProtectedRoute} from './ProtectedRoute'
+// import { select,line, curveCardinal,
+//     scaleTime, scaleLinear } from "d3";
+import * as d3 from "d3"; 
 
 const HomePage = (props) => {
     const {user, dispatch  } = useContext(UserContext);
@@ -21,6 +24,10 @@ const HomePage = (props) => {
     const [tradeSymbo, setTradeSymbo] =useState('')
     const [tradeQty,setTradeQty] = useState(1)
     const [tradePrice,setTradePrice] = useState(0)
+    const svgRef = useRef();
+    const [data, setData] = useState([25, 30, 45, 60, 20, 65, 75]);
+    
+
     React.useEffect(() => {
         userRef.current = user;
         let stockval = 0
@@ -31,6 +38,192 @@ const HomePage = (props) => {
         )
         setShareValue(stockval)
     });
+
+    /*
+    D3 start chart-container
+    */
+
+    // credits: https://brendansudol.com/writing/responsive-d3
+    const responsivefy = svg => {
+        // get container + svg aspect ratio
+        const container = d3.select(svg.node().parentNode),
+          width = parseInt(svg.style('width')),
+          height = parseInt(svg.style('height')),
+          aspect = width / height;
+      
+        // get width of container and resize svg to fit it
+        const resize = () => {
+          var targetWidth = parseInt(container.style('width'));
+          svg.attr('width', targetWidth);
+          svg.attr('height', Math.round(targetWidth / aspect));
+        };
+      
+        // add viewBox and preserveAspectRatio properties,
+        // and call resize so that svg resizes on inital page load
+        svg
+          .attr('viewBox', '0 0 ' + width + ' ' + height)
+          .attr('perserveAspectRatio', 'xMinYMid')
+          .call(resize);
+      
+        // to register multiple listeners for same event type,
+        // you need to add namespace, i.e., 'click.foo'
+        // necessary if you call invoke this function for multiple svgs
+        // api docs: https://github.com/mbostock/d3/wiki/Selections#on
+        d3.select(window).on('resize.' + container.attr('id'), resize);
+      };
+
+    useEffect(()=> {
+        console.log('getQuoteTicker',getQuoteTicker)
+        let { apiKey } =  userRef.current
+        const gethistoricalquote = async () => {
+            if(showQuoteDetails){
+                let response = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/${getQuoteTicker}/${apiKey}/2019-12-15`)
+                let res = await response.json()
+                console.log('res',res)
+                console.log('typeofres', typeof res)
+                console.log(res.response[0])
+                const data = res.response
+                console.log('data',data)
+
+                const dataSet = data.map(el =>(
+                    Object.assign({}, {
+                        date :new Date(el.date ),
+                        high : el.high,
+                        low : el.low,
+                        open : el.open,
+                        close : el.close,
+                        volume : el.volume,
+                    })
+                ))
+
+                console.log('dataSet',dataSet)
+
+                const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+                const width = window.innerWidth - margin.left - margin.right; // Use the window's width
+                const height = window.innerHeight - margin.top - margin.bottom; // Use the window's height
+
+                
+                console.log('svgRef width',svgRef.current.offsetWidth)
+
+                const xMin = d3.min(dataSet, d => {
+                    return d['date'];
+                  });
+                  console.log('xMin',xMin)
+                
+                  const xMax = d3.max(dataSet, d => {
+                    return d['date'];
+                  });
+
+                  console.log('xMax',xMax)
+                
+                  const yMin = d3.min(dataSet, d => {
+                    return d['close'];
+                  });
+                
+                  const yMax = d3.max(dataSet, d => {
+                    return d['close'];
+                  });
+
+                  // scale using range
+                const xScale = d3
+                .scaleTime()
+                .domain([xMin, xMax])
+                .range([0, width]);
+
+                const yScale = d3
+                .scaleLinear()
+                .domain([yMin - 5, yMax])
+                .range([height, 0]);
+
+                const svg = d3.select(svgRef.current).append('svg')
+                svg
+                .attr('width', width + margin['left'] + margin['right'])
+                .attr('height', height + margin['top'] + margin['bottom'])
+                .call(responsivefy)
+                .append('g')
+                .attr('transform', `translate(${margin['left']}, ${margin['top']})`);
+                  
+                 // create the axes component
+                svg
+                .append('g')
+                .attr('id', 'xAxis')
+                .attr('transform', `translate(0, ${height})`)
+                .call(d3.axisBottom(xScale));
+
+                svg
+                .append('g')
+                .attr('id', 'yAxis')
+                .attr('transform', `translate(${width}, 0)`)
+                .call(d3.axisRight(yScale));
+
+                const line = d3
+                .line()
+                .x(d => {
+                  return xScale(d['date']);
+                })
+                .y(d => {
+                  return yScale(d['close']);
+                });
+
+                svg
+                .append('path')
+                .data([dataSet])
+                .style('fill', 'none')
+                .style('height','90%')
+                .attr('id', 'priceChart')
+                .attr('stroke', 'black')
+                .attr('stroke-width', '1.5')
+                .attr('d', line);
+            }
+        }
+        
+        gethistoricalquote()
+        
+        
+                    
+        //  console.log('svg',svg)
+
+        //  console.log(svg
+        //     .selectAll("circle")
+        //     .data(data))
+        //     svg
+        //     .selectAll("circle")
+        //     .data(data)
+        //     .join("circle")
+        //     .attr("r", value => value)
+        //     .attr("cx", value => value * 2)
+        //     .attr("cy", value => value * 2)
+        //     .attr("stroke", "red");
+        // const myLine = line()
+        // .x((value, index) => index * 50)
+        // .y(value => 150 - value)
+        // .curve(curveCardinal);
+        // svg
+        // .style("width",'100%')
+        // .selectAll("path")
+        // .data([data])
+        // .join("path")
+        // .attr("d", value => myLine(value))
+        // .attr("fill", "none")
+        // .attr("stroke", "blue");
+    },[showQuoteDetails])
+
+   const drawChart = () => {
+       
+   }
+   /*
+   0:
+close: 102.38999938965
+date: Tue Jan 02 2018 09:30:00 GMT-0500 (Eastern Standard Time) {}
+high: 102.45999908447
+low: 102.12999725342
+open: 102.36000061035
+volume: 881200
+__proto__: Object
+   */
+    /*
+    D3 end
+    */
 
     useEffect( () => {
         console.log('heelo from assetwatch',userRef.current.assetWatchList)
@@ -100,6 +293,7 @@ const HomePage = (props) => {
         setTradeSymbo(getQuoteTicker)
         setTradeQty(1)
         setTradePrice(res.response[0].last.toFixed(2))
+        drawChart();
         setShowQuoteDetails(true)
     }
 
@@ -233,7 +427,10 @@ const HomePage = (props) => {
                 </div>
             </div>}
             
-            {showQuoteDetails && <div className="chart-container">chart</div>}
+            {showQuoteDetails && 
+            <div className="chart-container" ref={svgRef} >
+                {/* <svg ref={svgRef}></svg> */}
+            </div>}
         </div>}
         
     </div>

@@ -54,6 +54,32 @@ router.get('/tiingo/stock/quote/:quote/:apiKey', async function(req, res){
     
 })
 
+router.get('/tiingo/stock/historicalquote/:quote/:apiKey/:startDate', async function(req, res){
+    const ticker = req.params.quote
+    const apiKey = req.params.apiKey
+    const startDate = req.params.startDate
+    //const response = await tiingoapis.getEODQuote(ticker,apiKey,startDate);
+    const response = await tiingoapis.dummyGetHistoricalStockQuote(ticker,apiKey,startDate);
+    console.log('historicalquote response',response)
+    // console.log('socket',req.socket)
+    // console.log('io',req.io)
+    //res.send({type:'GET'})
+    
+    /*const response = await tiingoapis.getStockQuote(ticker);
+    console.log(typeof response)*/
+    
+    
+    //console.log('resp',resp)
+    //let resp2 = resp.json()
+    // console.log('resp2',resp2)
+    // console.log(typeof resp2)
+    // let dataObj =  JSON.parse(resp2.response)
+    // console.log('dataObj',dataObj)
+    // console.log(typeof dataObj)
+    res.send({response:response})
+    
+})
+
 
 router.post('/tiingo/stock/watchlist',function(req,res){
     console.log(req.body)
