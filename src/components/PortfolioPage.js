@@ -5,6 +5,7 @@ const PortfolioPage = (props) => {
     const {user, dispatch  } = useContext(UserContext);
     const [portfolioObj, setPortfolioObj] = useState([])
     const userRef = useRef(user);
+    const [forceUpdate, setForceUpdate] =useState(props.showPortFolioPage)
 
     React.useEffect(() => {
         userRef.current = user;
@@ -17,9 +18,14 @@ const PortfolioPage = (props) => {
 
     })
 
+    useEffect(() => {
+        
+
+    },[forceUpdate])
+
     const trade = (symbol,price, quantity) => {
         console.log(symbol)
-        props.tradeStock(symbol, price/quantity, quantity)
+        props.trade(symbol, price/quantity, quantity)
     }
     
 
@@ -38,7 +44,7 @@ const PortfolioPage = (props) => {
                         </tr>
                     </thead>
                     <tbody>
-                        {portfolioObj.map(
+                        {typeof portfolioObj !== 'undefined' && portfolioObj.map(
                             el => {
                                 return (
                                     <tr key={el.symbol}>

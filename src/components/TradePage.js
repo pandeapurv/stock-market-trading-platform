@@ -7,7 +7,7 @@ const TradePage = (props) => {
     const [tradeQty, setTradeQty] = useState(props.tradeQty)
     const [symbol,setSymbol] = useState(props.symbol)
     const [stockPrice, setStockPrice] = useState(props.price)
-
+    const [sellableQty, setSellableQty ] =useState(0)
 
     const {user, dispatch  } = useContext(UserContext);
 
@@ -15,7 +15,26 @@ const TradePage = (props) => {
 
     React.useEffect(() => {
         userRef.current = user;
+        
     });
+
+    useEffect(() => {
+        let { assetWatchList, assetDetails } =  userRef.current
+        if(assetWatchList.includes(symbol)){
+            let assetList = assetDetails.filter(el => el.symbol === symbol)
+            console.log('assetList',assetList)
+            let asset = assetList[0]
+            console.log('asset',asset)
+            if(typeof asset !== 'undefined'){
+                console.log('hello from sell')
+                setSellableQty(asset.quantity)
+            }
+            
+        }else{
+            setSellableQty(0)
+        }
+
+    },[])
 
     
 
@@ -96,6 +115,63 @@ const TradePage = (props) => {
         }
     }
 
+    const sellStock = async () => {
+
+        let { totalCash,watchList, userName, apiKey,watchlistDetails,id, socket,assetWatchList, assetDetails } =  userRef.current
+        
+        let response = await fetch(`http://localhost:5000/api/tiingo/stock/quote/${symbol}/${apiKey}`)
+        let res = await response.json()
+        console.log(res.response[0])
+
+        socket.emit('unsubscribeAssetList', {
+            ticker: symbol,
+            userName,
+            apiKey,
+            userId : user.id
+        })
+
+        dispatch({ type: 'UPDATECASH', user: { 
+            cash : totalCash + res.response[0].last *tradeQty}});
+
+
+        let assetList = assetDetails.filter(el => el.symbol === symbol)
+        let asset = assetList[0]
+        if(Number(asset.quantity) > Number(tradeQty)){
+            let assetDetail = new Object();
+            assetDetail.currPrice = res.response[0].last.toFixed(2)
+            assetDetail.symbol = symbol
+            assetDetail.qty = Number(asset.quantity) - Number(tradeQty)
+            assetDetail.marketValue = (Number(asset.quantity) - Number(tradeQty))* res.response[0].last.toFixed(2)
+
+            dispatch({ type: 'UPDATESELLASSETDETAILS', user: { assetDetail,  }});
+            socket.emit('subscribeAssetList', {
+                ticker: symbol,
+                userName,
+                apiKey,
+                userId : user.id
+            })
+        }else{
+            let assetDetailsList = assetDetails.filter(el => el.symbol !== symbol)
+            //assetDetails.push(assetlistDetail)
+            console.log('pandey',assetWatchList)
+            console.log('sdlnfsapurv',symbol)
+            let assetList = assetWatchList.filter(el => el !== symbol)
+            console.log('ewfedksjfskdf',assetList)
+            dispatch({ type: 'ADDTOASSETDETAILS', user: { assetDetails:assetDetailsList,  }});
+            
+            dispatch({ type: 'UPDATEASSETWATCHLIST', user: { assetWatchList:assetList,  }});
+            
+           
+        }
+
+        props.redirectToPortfolio()
+
+       
+        
+
+
+    }
+
     return ( 
         <div>
  
@@ -113,21 +189,20 @@ const TradePage = (props) => {
                     <tbody>
                         <tr key={symbol}>
                             <td>{symbol}</td>
-                            <td>{stockPrice}</td>
+                            <td>{Number(stockPrice).toFixed(2)}</td>
                             <td><input type="text" className="watchlist-form-input" 
                             required placeholder="quantity"
                     value={tradeQty} onChange ={(e) => (setTradeQty(e.target.value))} /></td>
                             <td>{(stockPrice*tradeQty).toFixed(2)}</td>
                             <td>
                             <button className="watchlist-form-btn" 
-                            disabled={userRef.current.totalCash < stockPrice*tradeQty}
+                            disabled={userRef.current.totalCash < stockPrice*tradeQty && tradeQty > 0}
                             onClick={() => buyStock()}
                             >Buy</button>
                             <span>/</span>
                             <button className="watchlist-form-btn" 
-                            disabled = {!userRef.current.assetWatchList.some(
-                                el => el.symbol === symbol)}
-                                onClick={() => buyStock()}
+                            disabled = {sellableQty <  tradeQty && tradeQty > 0 }
+                                onClick={() => sellStock()}
                             >Sell</button>
                             </td>
                         </tr>

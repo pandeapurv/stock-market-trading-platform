@@ -32,9 +32,9 @@ const HomePage = (props) => {
     React.useEffect(() => {
         userRef.current = user;
         let stockval = 0
-        userRef.current.assetDetails.forEach(
+        typeof userRef.current.assetDetails !== 'undefined' && userRef.current.assetDetails.forEach(
             el => {
-                stockval += el.marketValue
+                stockval += Number(el.marketValue)
             }
         )
         setShareValue(stockval)
@@ -376,6 +376,7 @@ __proto__: Object
         setShowQuoteDetails(true)
     }
 
+    
     const addToWatchList = () => {
         console.log(getQuoteDetails.symbol)
         let { watchList, userName, apiKey,watchlistDetails,id, socket } =  userRef.current
@@ -390,6 +391,18 @@ __proto__: Object
         //props.history.push('/home/trade')
     }
 
+    const showHomePage = () => {
+        setShowTradePage(false)
+        setShowPortFolioPage(false)
+        setShowQuoteDetails(false)
+        
+    }
+    const showPortFolio =() => {
+        setShowTradePage(false)
+        setShowPortFolioPage(true)
+
+        
+    }
     const redirectToPortfolio = () => {
         console.log('inside redirectToPortfolio')
         //props.history.push('/home/portfolio')
@@ -399,12 +412,13 @@ __proto__: Object
     }
 
     const trade = (symbol, price, quantity) => {
-        setShowTradePage(true)
-        setShowPortFolioPage(false)
-        
+        console.log('trade',symbol)
         setTradeSymbo(symbol)
         setTradeQty(quantity)
         setTradePrice(price)
+        setShowTradePage(true)
+        setShowPortFolioPage(false)
+        
 
     }
 
@@ -441,8 +455,10 @@ __proto__: Object
             <div>
                 <nav className="nav-tabs">
                     <ul className="nav-tabs-ul">
-                        <li className="nav-tabs-li">Home</li>
-                        <li className="nav-tabs-li">Portfolio</li>
+                        <li className="nav-tabs-li"
+                        onClick={() => showHomePage()}>Home</li>
+                        <li className="nav-tabs-li" 
+                        onClick={() => showPortFolio()}>Portfolio</li>
                         <li className="nav-tabs-li">Settings</li>
                     </ul>
                     </nav>
@@ -470,7 +486,7 @@ __proto__: Object
         <div className="main-info-details">
         <PortfolioPage symbol={getQuoteTicker} 
         price={getQuoteDetails.price}
-        tradeStock= {tradeStock}/>
+        trade= {trade} showPortFolioPage={showPortFolioPage}/>
         </div>
         }
 

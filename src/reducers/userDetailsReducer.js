@@ -104,6 +104,20 @@ export const userDetailsReducer = (state, action) => {
                 : el
                 ))
             }
+        
+        case 'UPDATESELLASSETDETAILS' : 
+            return {
+                ...state,
+                assetDetails : state.assetDetails.map (el => (el.symbol ===  action.user.assetDetail.symbol 
+                ? Object.assign({}, {
+                    symbol: action.user.assetDetail.symbol,
+                    buyingPrice: el.buyingPrice,
+                    marketValue: action.user.assetDetail.marketValue.toFixed(2), 
+                    quantity: Number(action.user.assetDetail.qty),                                
+                })
+                : el
+                ))
+            }
 
             case 'UPDATEASSETPRICEDETAILS' : 
             return {
