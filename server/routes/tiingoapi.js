@@ -29,7 +29,7 @@ module.exports = {
     dummyGetStockQuote : function(ticker,apiKey){
       let d = new Date();
         let DummyStockQuotes = {
-          AAPL: [ { last: 333 * (Math.floor(Math.random() * 3) + 1  ),
+          AAPL: [ { last: 333 * (Math.random() * 3 + 1  ),
             bidPrice: null,
             quoteTimestamp: '2020-06-08T20:00:00+00:00',
             mid: null,
@@ -47,7 +47,7 @@ module.exports = {
             lastSaleTimestamp: '2020-06-08T20:00:00+00:00',
             high: 333.6 } ],
 
-            AMZN: [ { last: 2200 * (Math.floor(Math.random() * 3) + 1  ),
+            AMZN: [ { last: 2200 * (Math.random() * 3 + 1  ),
               bidPrice: null,
               quoteTimestamp: '2020-06-08T20:00:00+00:00',
               mid: null,
@@ -65,7 +65,7 @@ module.exports = {
               lastSaleTimestamp: '2020-06-08T20:00:00+00:00',
               high: 333.6 } ],
             
-              TSLA: [ { last: 900 * (Math.floor(Math.random() * 3) + 1  ),
+              TSLA: [ { last: 900 * (Math.random() * 3 + 1  ),
                 bidPrice: null,
                 quoteTimestamp: '2020-06-08T20:00:00+00:00',
                 mid: null,

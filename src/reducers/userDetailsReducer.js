@@ -76,6 +76,7 @@ export const userDetailsReducer = (state, action) => {
                 watchlistDetails : state.watchlistDetails.filter(el => el.symbol !== action.user.watchlistDetailTicker)
             }
 
+            /**asset actions*/
         case 'UPDATEASSETWATCHLIST' :
             return {
                 ...state,
@@ -94,9 +95,25 @@ export const userDetailsReducer = (state, action) => {
                 assetDetails : state.assetDetails.map (el => (el.symbol ===  action.user.assetDetail.symbol 
                 ? Object.assign({}, {
                     symbol: action.user.assetDetail.symbol,
-                    quantity: el.quantity,
-                    buyingPrice: el.buyingPrice,
-                    marketValue: state.marketValue +action.user.assetDetail.quantity * action.user.assetDetail.currPrice, 
+                    buyingPrice: ((Number(el.buyingPrice) * Number(el.quantity) + 
+                        Number(action.user.assetDetail.buyingPrice) * Number(action.user.assetDetail.qty)) / 
+                    (Number(el.quantity) + Number(action.user.assetDetail.qty))).toFixed(2),
+                    quantity: Number(el.quantity) + Number(action.user.assetDetail.qty),                    
+                    marketValue: (Number(el.marketValue) + Number(action.user.assetDetail.qty) * Number(action.user.assetDetail.buyingPrice)).toFixed(2), 
+                })
+                : el
+                ))
+            }
+
+            case 'UPDATEASSETPRICEDETAILS' : 
+            return {
+                ...state,
+                assetDetails : state.assetDetails.map (el => (el.symbol ===  action.user.assetDetail.symbol 
+                ? Object.assign({}, {
+                    symbol: action.user.assetDetail.symbol,
+                    buyingPrice: Number(el.buyingPrice).toFixed(2) ,
+                    quantity: Number(el.quantity) ,                    
+                    marketValue: (Number(el.quantity) * Number(action.user.assetDetail.currPrice)).toFixed(2), 
                 })
                 : el
                 ))

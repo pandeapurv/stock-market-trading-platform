@@ -137,4 +137,4 @@ setInterval( async function(){
         }    
     }
     disabledAssetSocketEvents.forEach(el => app.locals.assetMap.delete(el))
-}, 100000);
+}, 10000);

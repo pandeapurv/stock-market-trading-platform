@@ -21,6 +21,7 @@ const HomePage = (props) => {
     const [getQuoteDetails ,setGetQuoteDetails] = useState({})
     const [showQuoteDetails, setShowQuoteDetails] = useState(false)
     const [shareValue , setShareValue] = useState(0)
+    const [accValue, setAccValue] = useState(0)
     const [tradeSymbo, setTradeSymbo] =useState('')
     const [tradeQty,setTradeQty] = useState(1)
     const [tradePrice,setTradePrice] = useState(0)
@@ -33,10 +34,14 @@ const HomePage = (props) => {
         let stockval = 0
         userRef.current.assetDetails.forEach(
             el => {
-                stockval += el.quantity * el.marketValue
+                stockval += el.marketValue
             }
         )
         setShareValue(stockval)
+
+       let accval = Number(userRef.current.totalCash) + Number(shareValue)
+
+        setAccValue(accval.toFixed(2))
     });
 
     /*
@@ -70,6 +75,21 @@ const HomePage = (props) => {
         // necessary if you call invoke this function for multiple svgs
         // api docs: https://github.com/mbostock/d3/wiki/Selections#on
         d3.select(window).on('resize.' + container.attr('id'), resize);
+      };
+
+      const movingAverage = (data, numberOfPricePoints) => {
+        return data.map((row, index, total) => {
+          const start = Math.max(0, index - numberOfPricePoints);
+          const end = index;
+          const subset = total.slice(start, end + 1);
+          const sum = subset.reduce((a, b) => {
+            return a + b['close'];
+          }, 0);
+          return {
+            date: row['date'],
+            average: sum / subset.length
+          };
+        });
       };
 
     useEffect(()=> {
@@ -165,6 +185,16 @@ const HomePage = (props) => {
                   return yScale(d['close']);
                 });
 
+                const movingAverageLine = d3
+                .line()
+                .x(d => {
+                  return xScale(d['date']);
+                })
+                .y(d => {
+                  return yScale(d['average']);
+                })
+                .curve(d3.curveBasis);
+
                 svg
                 .append('path')
                 .data([dataSet])
@@ -174,6 +204,55 @@ const HomePage = (props) => {
                 .attr('stroke', 'black')
                 .attr('stroke-width', '1.5')
                 .attr('d', line);
+
+                const movingAverageData = movingAverage(dataSet, 49);
+                svg
+                  .append('path')
+                  .data([movingAverageData])
+                  .style('fill', 'none')
+                  .attr('id', 'movingAverageLine')
+                  .attr('stroke', '#FF8900')
+                  .attr('d', movingAverageLine);
+
+                const yMinVolume = d3.min(dataSet, d => {
+                return Math.min(d['volume']);
+                });
+            
+                const yMaxVolume = d3.max(dataSet, d => {
+                return Math.max(d['volume']);
+                });
+
+                const yVolumeScale = d3
+                .scaleLinear()
+                .domain([yMinVolume, yMaxVolume])
+                .range([height, height * (3 / 4)]);
+
+                svg
+                .selectAll()
+                .data(dataSet)
+                .enter()
+                .append('rect')
+                .attr('x', d => {
+                  return xScale(d['date']);
+                })
+                .attr('y', d => {
+                  return yVolumeScale(d['volume']);
+                })
+                .attr('class', 'vol')
+                .attr('fill', (d, i) => {
+                  if (i === 0) {
+                    return '#03a678';
+                  } else {
+                    return dataSet[i - 1].close > d.close ? '#c0392b' : '#03a678'; // green bar if price is rising during that period, and red when price  is falling
+                  }
+                })
+                .attr('width', 1)
+                .attr('height', d => {
+                  return height - yVolumeScale(d['volume']);
+                });
+                
+
+
             }
         }
         
@@ -237,7 +316,7 @@ __proto__: Object
                     let assetDetail = new Object();
                     assetDetail.currPrice = data[0].last.toFixed(2)
                     assetDetail.symbol = ticker
-                    dispatch({ type: 'UPDATEASSETDETAILS', user: { assetDetail,  }});
+                    dispatch({ type: 'UPDATEASSETPRICEDETAILS', user: { assetDetail,  }});
 
                 })
             )
@@ -346,15 +425,15 @@ __proto__: Object
                     <ul className="nav-account-info-ul">
                         <li className="nav-account-info-li">
                             <div className="nav-account-info-title">Account Value</div>
-                            <div className="nav-account-info-val">${userRef.current.totalCash + shareValue}</div>                           
+                            <div className="nav-account-info-val">${accValue}</div>                           
                         </li>
                         <li className="nav-account-info-li">
                             <div className="nav-account-info-title">Total cash </div>
-                            <div className="nav-account-info-val">${userRef.current.totalCash}</div>
+                            <div className="nav-account-info-val">${Number(userRef.current.totalCash).toFixed(2)}</div>
                         </li>
                         <li className="nav-account-info-li">
                             <div className="nav-account-info-title">Positions</div>
-                            <div className="nav-account-info-val">${shareValue}</div>
+                            <div className="nav-account-info-val">${Number(shareValue).toFixed(2)}</div>
                         </li>
                     </ul>
                 </nav>

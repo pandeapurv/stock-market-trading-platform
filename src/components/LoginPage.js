@@ -3,19 +3,19 @@ import { UserContext } from '../contexts/UserContext'
 import io from "socket.io-client";
 
 
-const fakeAuth = {
-    isAuthenticated : false,
+// const fakeAuth = {
+//     isAuthenticated : false,
   
-    signIn(cb) {
-      this.isAuthenticated= true;
-      setTimeout(cb,100)
-    },
+//     signIn(cb) {
+//       this.isAuthenticated= true;
+//       setTimeout(cb,100)
+//     },
   
-    signOute(cb){
-      this.isAuthenticated= false;
-      setTimeout(cb,100)
-    }
-  }
+//     signOute(cb){
+//       this.isAuthenticated= false;
+//       setTimeout(cb,100)
+//     }
+//   }
 
   
 
