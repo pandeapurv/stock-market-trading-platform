@@ -1,5 +1,15 @@
 import React, { useContext, useState, useEffect,useRef }  from 'react';
 import { UserContext } from '../contexts/UserContext'
+import DeleteIcon from '@material-ui/icons/Delete';
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
 
 const Watchlist = () => {
 
@@ -8,6 +18,17 @@ const Watchlist = () => {
     const [addSymbol, setAddSymbol] = useState('')
     const userRef = useRef(user);
 
+    const useStyles = makeStyles({
+        table: {
+          minWidth: 650,
+        },
+
+        headweight: {
+            fontWeight: 700,
+        }
+
+      });
+      const classes = useStyles();
     React.useEffect(() => {
         userRef.current = user;
     });
@@ -78,7 +99,7 @@ const Watchlist = () => {
             </form>
            
            <div className="watchlist-div">
-                <table className="watchlist-table">
+                {/* <table className="watchlist-table">
                     <thead>
                         <tr>
                         <td>Symbol</td>
@@ -100,13 +121,47 @@ const Watchlist = () => {
                                 <td>{el.high}</td>
                                 <td>{el.volume}</td>
                                 <td>{el.daygain}</td>                               
-                                <td onClick={(e) => removeSymbol(el.symbol, e)}>X</td>
+                                <td onClick={(e) => removeSymbol(el.symbol, e)}>
+                                <DeleteIcon /></td>
                                 </tr>
                             
                         ))}
                         
                     </tbody>
-                    </table>
+                    </table> */}
+
+                    <TableContainer component={Paper}>
+      <Table className={classes.table} size="small" aria-label="a dense table">
+        <TableHead className={classes.headweight}>
+          <TableRow>
+            <TableCell align="right">Symbol</TableCell>
+            <TableCell align="right">Price</TableCell>
+            <TableCell align="right">low</TableCell>
+            <TableCell align="right">high</TableCell>
+            <TableCell align="right">volume</TableCell>
+            <TableCell align="right">Day Gain %</TableCell>
+            <TableCell align="right">Remove</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+        {userRef.current.watchlistDetails.map(el => (
+            <TableRow key={el.symbol}>
+              {/* <TableCell component="th" scope="row">
+                {row.name}
+              </TableCell> */}
+              <TableCell align="right">{el.symbol}</TableCell>
+              <TableCell align="right">{el.price}</TableCell>
+              <TableCell align="right">{el.low}</TableCell>
+              <TableCell align="right">{el.high}</TableCell>
+              <TableCell align="right">{el.volume}</TableCell>
+              <TableCell align="right">{el.daygain}</TableCell>
+              <TableCell align="right" onClick={(e) => removeSymbol(el.symbol, e)}>
+              <DeleteIcon /></TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </TableContainer>
            </div>
             
         </div>

@@ -63,6 +63,7 @@ body{
 }
 
 .btn-login {
+  
   color: white;
   background: #141414;
   display: inline-block;
@@ -73,8 +74,42 @@ body{
   letter-spacing: 1px;
   border: 0;
   cursor: pointer;
+  
 }
 
+.add-to-watchList-btn{
+  
+  border-radius: 5px;
+  color: white;
+  background: #141414;
+  display: inline-block;
+  padding: 1em 1.5em;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border: 0;
+  cursor: pointer;
+  margin-left:1em
+  
+}
+
+.trade-stock-btn{
+  border-radius: 5px;
+  color: white;
+  background: #141414;
+  display: inline-block;
+  padding: 0.5em 1.5em;
+  font-size: 0.625rem;
+  text-transform: uppercase;
+  font-weight: 900;
+  letter-spacing: 1px;
+  border: 0;
+  cursor: pointer;
+  margin-left: 1em;
+
+
+}
 /* Home Page*/
 
 
@@ -145,6 +180,7 @@ header {
 
 .nav-tabs-li{
   padding-left: 2em;
+  cursor: pointer;
 }
 
 .main-info{
@@ -246,6 +282,42 @@ header {
   padding-right: 0;
   margin-right: 0;
   margin-bottom: 0.5em;
+  display: flex;
+  flex-direction: row; 
+  margin-top: 0.5em
+
+  
+}
+
+.watchlist-form-input{
+ 
+  font-family: inherit;
+  text-align: inherit;
+  border: 1px solid #404040;
+  width: 60%;
+  border-radius: 5px;
+  text-transform: uppercase;
+
+  
+  
+}
+
+.watchlist-form-btn
+{
+  
+  width: 40%;
+  margin-left: 1em;
+  border-radius: 5px;
+  color: white;
+  background: #141414;
+  display: inline-block;
+  padding: 0.5em 1em;
+  font-size: 0.625rem;
+  text-transform: capitalize;
+  font-weight: 900;
+  letter-spacing: 1px;
+  
+  cursor: pointer;
 }
 
 
@@ -292,7 +364,7 @@ font-size: 2.0rem;
 }
 
 .quotedetails-symbol{
-  grid-column: 1 / 3;
+  grid-column: 1 / 4;
 }
 .quotedetails-change,
 .quotedetails-close{
@@ -303,10 +375,10 @@ font-size: 2.0rem;
   padding-top: 0.7em
 }
 
-.quotedetails-btn{
+/* .quotedetails-btn{
   justify-self: end;
   padding-right: 0.2em
-}
+} */
 
 .trade-div{
   /* border: 1px solid black; */
@@ -350,4 +422,35 @@ font-size: 2.0rem;
 
 .bars.down-day rect {
   fill: #c0392b;
+}
+
+.actiondivider{
+  padding-left: 0.3em
+}
+
+.trade-qty-input{
+  font-family: inherit;
+  text-align: inherit;
+  border: 1px solid #404040;
+  width: 60%;
+  border-radius: 5px;
+
+}
+
+.disable-trade-btn
+{
+  
+  width: 40%;
+  margin-left: 1em;
+  border-radius: 5px;
+  color: white;
+  background: #b4adad;
+  display: inline-block;
+  padding: 0.5em 1em;
+  font-size: 0.625rem;
+  text-transform: capitalize;
+  font-weight: 900;
+  letter-spacing: 1px;
+  
+  cursor: not-allowed;
 }

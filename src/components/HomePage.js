@@ -684,18 +684,19 @@ __proto__: Object
             </div>
            {showQuoteDetails && <div className="quotedetails">
                 <div className="subquotedetails">
-                    <div className="quotedetails-symbol">{getQuoteDetails.symbol} 
-                        <button className="getquote-form-btn"
-                        onClick={() => tradeStock()} >Trade</button>
-                    </div>
-                    <div className="quotedetails-btn">
-                    <button className="getquote-form-btn" 
-                        onClick={() => addToWatchList()} >
+                    <div className="quotedetails-symbol">
+                    <span>{getQuoteDetails.symbol} </span>
+                        <button className=" add-to-watchList-btn"
+                        onClick={() => addToWatchList() } >Add to watch list</button>
+                        <button className="add-to-watchList-btn" 
+                        onClick={() =>  tradeStock()} >
                         {/* <Link to={`${match.url}/props-v-state`}>Add to watch list</Link> */}
                         {/* <Link to="/home/trade"> */}
-                        Add to watch list
+                        Trade
                         {/* </Link> */}
-                    </button></div>
+                    </button>
+                    </div>
+                    
                     <div className="quotedetails-lprice">{getQuoteDetails.price}</div>
                     <div className="quotedetails-change">{getQuoteDetails.changepercent} %</div>
                     <div className="quotedetails-open">Open: {getQuoteDetails.open}</div>

@@ -1,6 +1,13 @@
 import React, { useContext, useState, useEffect, useRef }  from 'react';
 import { UserContext } from '../contexts/UserContext'
-
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
 //{symbol, price}
 const TradePage = (props) => {
 
@@ -17,6 +24,19 @@ const TradePage = (props) => {
         userRef.current = user;
         
     });
+
+    const useStyles = makeStyles({
+        table: {
+          minWidth: 650,
+        },
+
+        headweight: {
+            fontWeight: 700,
+        }
+
+      });
+
+      const classes = useStyles();
 
     useEffect(() => {
         let { assetWatchList, assetDetails } =  userRef.current
@@ -176,7 +196,7 @@ const TradePage = (props) => {
         <div>
  
            <div className="trade-div">
-                <table className="trade-table">
+                {/* <table className="trade-table">
                     <thead>
                         <tr>
                         <td>Symbol</td>
@@ -208,7 +228,53 @@ const TradePage = (props) => {
                         </tr>
                         
                     </tbody>
-                    </table>
+                    </table> */}
+
+                    <TableContainer component={Paper}>
+      <Table className={classes.table} size="small" aria-label="a dense table">
+        <TableHead className={classes.headweight}>
+          <TableRow>
+            <TableCell align="right">Symbol</TableCell>
+            <TableCell align="right">Market Price</TableCell>
+            <TableCell align="right">Quantity</TableCell>
+            <TableCell align="right">Trade Value</TableCell>
+            <TableCell align="right">Action</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+            <TableRow key={symbol}>
+              {/* <TableCell component="th" scope="row">
+                {row.name}
+              </TableCell> */}
+              <TableCell align="right">{symbol}</TableCell>
+              <TableCell align="right">{Number(stockPrice).toFixed(2)}</TableCell>
+              <TableCell align="right" className="trade-qty-td">
+              <input type="text" className=" trade-qty-input" 
+                            required placeholder="quantity"
+                    value={tradeQty} onChange ={(e) => (setTradeQty(e.target.value))} />
+              </TableCell>
+              <TableCell align="right">{(stockPrice*tradeQty).toFixed(2)}</TableCell>
+              <TableCell align="right">
+              <button className={userRef.current.totalCash < stockPrice*tradeQty && tradeQty > 0
+              ? "disable-trade-btn" : "watchlist-form-btn" }
+              
+                disabled={userRef.current.totalCash < stockPrice*tradeQty && tradeQty > 0}
+                onClick={() => buyStock()}
+                >Buy</button>
+                <span className="actiondivider"></span>
+                <button className= {sellableQty <  tradeQty && tradeQty > 0 ? "disable-trade-btn"
+                : "watchlist-form-btn" }
+                disabled = {sellableQty <  tradeQty && tradeQty > 0 }
+
+                    onClick={() => sellStock()}
+                >Sell</button>
+              </TableCell>
+            </TableRow>
+
+        </TableBody>
+      </Table>
+    </TableContainer>
+
            </div>
            {/* </form> */}
             

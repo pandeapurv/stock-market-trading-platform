@@ -1,6 +1,15 @@
 import React, { useContext, useState, useEffect, useRef }  from 'react';
 import { UserContext } from '../contexts/UserContext'
 
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+
 const PortfolioPage = (props) => {
     const {user, dispatch  } = useContext(UserContext);
     const [portfolioObj, setPortfolioObj] = useState([])
@@ -18,6 +27,19 @@ const PortfolioPage = (props) => {
 
     })
 
+    const useStyles = makeStyles({
+        table: {
+          minWidth: 650,
+        },
+
+        headweight: {
+            fontWeight: 700,
+        }
+
+      });
+
+      const classes = useStyles();
+
     useEffect(() => {
         
 
@@ -33,55 +55,45 @@ const PortfolioPage = (props) => {
         <div>
  
            <div className="trade-div">
-                <table className="trade-table">
-                    <thead>
-                        <tr>
-                        <td>Symbol</td>
-                        <td>Buying Price</td>                        
-                        <td>Quantity</td>
-                        <td>Market Value</td>
-                        <td>Trade</td>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {typeof portfolioObj !== 'undefined' && portfolioObj.map(
-                            el => {
-                                return (
-                                    <tr key={el.symbol}>
-                                        <td>{el.symbol}</td>
-                                        <td>{el.buyingPrice}</td>
-                                        <td>{el.quantity}</td>
-                                        <td>{el.marketValue}</td>
-                                        <td
-                                        onClick={(e) => trade(el.symbol, 
-                                            el.marketValue, el.quantity)}>Trade</td>
-                                    </tr>  
-                                )
-                            }
-                        )}
-                        {/* <tr key={symbol}>
-                            <td>{symbol}</td>
-                            <td>{stockPrice}</td>
-                            <td><input type="text" className="watchlist-form-input" 
-                            required placeholder="quantity"
-                    value={tradeQty} onChange ={(e) => (setTradeQty(e.target.value))} /></td>
-                            <td>{stockPrice*tradeQty}</td>
-                            <td>
-                            <button className="watchlist-form-btn" 
-                            disabled={userRef.current.totalCash < stockPrice*tradeQty}
-                            onClick={() => buyStock()}
-                            >Buy</button>
-                            <span>/</span>
-                            <button className="watchlist-form-btn" 
-                            disabled = {!userRef.current.assetWatchList.some(
-                                el => el.symbol === symbol)}
-                                onClick={() => buyStock()}
-                            >Sell</button>
-                            </td>
-                        </tr> */}
+                
+            <TableContainer component={Paper}>
+            <Table className={classes.table} size="small" aria-label="a dense table">
+                <TableHead className={classes.headweight}>
+                <TableRow>
+                    <TableCell align="right">Symbol</TableCell>
+                    <TableCell align="right">Buying Price</TableCell>
+                    <TableCell align="right">Quantity</TableCell>
+                    <TableCell align="right">Market Value</TableCell>
+                    <TableCell align="right">Action</TableCell>
+                </TableRow>
+                </TableHead>
+                <TableBody>
+                {typeof portfolioObj !== 'undefined' && portfolioObj.map(
+                            el =>(
+                    <TableRow key={el.symbol}>
+                        {/* <TableCell component="th" scope="row">
+                            {row.name}
+                        </TableCell> */}
+                        <TableCell align="right">{el.symbol}</TableCell>
+                        <TableCell align="right">{el.buyingPrice}</TableCell>
                         
-                    </tbody>
-                    </table>
+                        <TableCell align="right">{el.quantity}</TableCell>
+                        <TableCell align="right">{el.marketValue}</TableCell>
+                        <TableCell align="right">
+                        <button className="watchlist-form-btn" 
+                            onClick={(e) => trade(el.symbol, 
+                            el.marketValue, el.quantity)}>Trade</button>
+                                       
+                        </TableCell>
+                    </TableRow>
+                            ))}
+                    
+
+                </TableBody>
+            </Table>
+            </TableContainer>
+                        
+                   
            </div>
            {/* </form> */}
             
