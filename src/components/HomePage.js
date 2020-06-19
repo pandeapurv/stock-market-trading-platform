@@ -98,7 +98,11 @@ const HomePage = (props) => {
         const gethistoricalquote = async () => {
             if(showQuoteDetails){
                 let response = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/${getQuoteTicker}/${apiKey}/2019-12-15`)
+                //if(response !== undefined && response!==''){
+                   
+                
                 let res = await response.json()
+                
                 console.log('res',res)
                 console.log('typeofres', typeof res)
                 console.log(res.response[0])
@@ -118,7 +122,7 @@ const HomePage = (props) => {
 
                 console.log('dataSet',dataSet)
 
-                const margin = { top: 50, right: 50, bottom: 50, left: 50 };
+                const margin = { top: 30, right: 50, bottom: 50, left: 50 };
                 const width = window.innerWidth - margin.left - margin.right; // Use the window's width
                 const height = window.innerHeight - margin.top - margin.bottom; // Use the window's height
 
@@ -145,20 +149,24 @@ const HomePage = (props) => {
                   });
 
                   // scale using range
+                  let padding = 30;
                 const xScale = d3
                 .scaleTime()
                 .domain([xMin, xMax])
                 .range([0, width]);
+                //.range([padding, width - padding])
 
                 const yScale = d3
                 .scaleLinear()
                 .domain([yMin - 5, yMax])
                 .range([height, 0]);
+                //.range([height - padding, padding])
 
                 const svg = d3.select(svgRef.current).append('svg')
                 svg
                 .attr('width', width + margin['left'] + margin['right'])
                 .attr('height', height + margin['top'] + margin['bottom'])
+                .attr('class', 'mainchart')
                 .call(responsivefy)
                 .append('g')
                 .attr('transform', `translate(${margin['left']}, ${margin['top']})`);
@@ -202,7 +210,7 @@ const HomePage = (props) => {
                 .style('height','90%')
                 .attr('id', 'priceChart')
                 .attr('stroke', 'black')
-                .attr('stroke-width', '1.5')
+                .attr('stroke-width', '1')
                 .attr('d', line);
 
                 const movingAverageData = movingAverage(dataSet, 49);
@@ -211,7 +219,7 @@ const HomePage = (props) => {
                   .data([movingAverageData])
                   .style('fill', 'none')
                   .attr('id', 'movingAverageLine')
-                  .attr('stroke', '#FF8900')
+                  .attr('stroke', '#040ab8')
                   .attr('d', movingAverageLine);
 
                 const yMinVolume = d3.min(dataSet, d => {
@@ -250,8 +258,163 @@ const HomePage = (props) => {
                 .attr('height', d => {
                   return height - yVolumeScale(d['volume']);
                 });
+
+
+                //// CandleStick Start
+
+                svg
+                .append('g')
+                .attr('id', 'candlesticks-series')
+
+                const bodyWidth = 5;
+                const candlesticksLine = d3
+                  .line()
+                  .x(d => d['x'])
+                  .y(d => d['y']);
+          
+                const candlesticksSelection = d3
+                  .select('#candlesticks-series')
+                  .selectAll('.candlestick')
+                  .data(dataSet, d => d['volume']);
+          
+                candlesticksSelection.join(enter => {
+                  const candlesticksEnter = enter
+                    .append('g')
+                    .attr('class', 'candlestick')
+                    .append('g')
+                    .attr('class', 'bars')
+                    .classed('up-day', d => d['close'] > d['open'])
+                    .classed('down-day', d => d['close'] <= d['open']);
+                  candlesticksEnter
+                    .append('path')
+                    .classed('high-low', true)
+                    .attr('d', d => {
+                      return candlesticksLine([
+                        { x: xScale(d['date']), y: yScale(d['high']) },
+                        { x: xScale(d['date']), y: yScale(d['low']) }
+                      ]);
+                    });
+                  candlesticksEnter
+                    .append('rect')
+                    .attr('x', d => xScale(d.date) - bodyWidth / 2)
+                    .attr('y', d => {
+                      return d['close'] > d['open']
+                        ? yScale(d.close)
+                        : yScale(d.open);
+                    })
+                    .attr('width', bodyWidth)
+                    .attr('height', d => {
+                      return d['close'] > d['open']
+                        ? yScale(d.open) - yScale(d.close)
+                        : yScale(d.close) - yScale(d.open);
+                    });
+                });
+
+
+                //// CandleStick End
                 
 
+
+                // renders x and y crosshair
+  const focus = svg
+  .append('g')
+  .attr('class', 'focus')
+  .style('display', 'none');
+
+focus.append('circle').attr('r', 4.5);
+focus.append('line').classed('x', true);
+focus.append('line').classed('y', true);
+
+svg
+  .append('rect')
+  .attr('class', 'overlay')
+  .attr('width', width )
+  .attr('height', height +10)
+  .on('mouseover', () => focus.style('display', null))
+  .on('mouseout', () => focus.style('display', 'none'))
+  .on('mousemove', generateCrosshair);
+
+d3.select('.overlay').style('fill', 'none');
+d3.select('.overlay').style('pointer-events', 'all');
+
+d3.selectAll('.focus line').style('fill', 'none');
+d3.selectAll('.focus line').style('stroke', '#67809f');
+d3.selectAll('.focus line').style('stroke-width', '1.5px');
+d3.selectAll('.focus line').style('stroke-dasharray', '3 3');
+
+//returs insertion point
+const bisectDate = d3.bisector(d => d.date).left;
+
+/* mouseover function to generate crosshair */
+function generateCrosshair() {
+  //returns corresponding value from the domain
+  const correspondingDate = xScale.invert(d3.mouse(this)[0]);
+  //gets insertion point
+  const i = bisectDate(dataSet, correspondingDate, 1);
+  const d0 = dataSet[i - 1];
+  const d1 = dataSet[i];
+  const currentPoint =
+    correspondingDate - d0['date'] > d1['date'] - correspondingDate ? d1 : d0;
+  focus.attr(
+    'transform',
+    `translate(${xScale(currentPoint['date'])}, ${yScale(
+      currentPoint['close']
+    )})`
+  );
+
+  focus
+    .select('line.x')
+    .attr('x1', 0)
+    .attr('x2', width - xScale(currentPoint['date']))
+    .attr('y1', 0)
+    .attr('y2', 0);
+
+  focus
+    .select('line.y')
+    .attr('x1', 0)
+    .attr('x2', 0)
+    .attr('y1', 0)
+    .attr('y2', height - yScale(currentPoint['close']));
+
+  // updates the legend to display the date, open, close, high, low, and volume of the selected mouseover area
+  updateLegends(currentPoint);
+}
+
+/* Legends */
+const updateLegends = currentData => {
+  d3.selectAll('.lineLegend').remove();
+
+  const legendKeys = Object.keys(data[0]);
+  
+  console.log('legendKeys',legendKeys)
+  const lineLegend = svg
+    .selectAll('.lineLegend')
+    .data(["date","close","high","low","open", "volume"]) 
+    .enter()
+    .append('g')
+    .attr('class', 'lineLegend')
+    .attr('transform', (d, i) => {
+      return `translate(0, ${i * 20})`;
+    });
+  lineLegend
+    .append('text')
+    .text(d => {
+      if (d === 'date') {
+        return `${d}: ${currentData[d].toLocaleDateString()}`;
+      } else if (
+        d === 'high' ||
+        d === 'low' ||
+        d === 'open' ||
+        d === 'close'
+      ) {
+        return `${d}: ${currentData[d].toFixed(2)}`;
+      } else {
+        return `${d}: ${currentData[d]}`;
+      }
+    })
+    .style('fill', 'black')
+    .attr('transform', 'translate(25,15)'); //align texts with boxes
+};
 
             }
         }
@@ -285,6 +448,7 @@ const HomePage = (props) => {
         // .attr("d", value => myLine(value))
         // .attr("fill", "none")
         // .attr("stroke", "blue");
+    //}
     },[showQuoteDetails])
 
    const drawChart = () => {
@@ -347,6 +511,12 @@ __proto__: Object
         }      
     }, []);
 
+    const testRemove = () => {
+        d3.select('.mainchart')
+        .select('#candlesticks-series')
+        .remove();
+    }
+
 
 
     const handleSubmit = async (e) => {
@@ -355,25 +525,36 @@ __proto__: Object
         console.log('getQuoteTicker',getQuoteTicker)
         setShowQuoteDetails(false)
         let response = await fetch(`http://localhost:5000/api/tiingo/stock/quote/${getQuoteTicker}/${apiKey}`)
-        let res = await response.json()
-        console.log(res.response[0])
-        console.log(res.response[0].last)
-        setGetQuoteDetails({
-            symbol :res.response[0].ticker,
-            price :res.response[0].last.toFixed(2),
-            open :res.response[0].open.toFixed(2),
-            low:res.response[0].low.toFixed(2),
-            high:res.response[0].high.toFixed(2),
-            volume:res.response[0].volume,
-            prevClose:res.response[0].prevClose.toFixed(2),
-            changepercent : (((res.response[0].last.toFixed(2)-res.response[0].prevClose.toFixed(2))/res.response[0].prevClose.toFixed(2)) * 100).toFixed(2)
-        })
-        
-        setTradeSymbo(getQuoteTicker)
-        setTradeQty(1)
-        setTradePrice(res.response[0].last.toFixed(2))
-        drawChart();
-        setShowQuoteDetails(true)
+        if(response !== undefined && response!=='' ){
+            
+            console.log('response',response)
+            console.log(typeof response)
+            let res = await response.json()
+            //if(Object.keys(res).length !== 0 && res.constructor !== Object){
+
+            
+            console.log('res',res)
+            console.log(typeof res)
+            console.log(res.response[0])
+            console.log(res.response[0].last)
+            setGetQuoteDetails({
+                symbol :res.response[0].ticker,
+                price :res.response[0].last.toFixed(2),
+                open :res.response[0].open.toFixed(2),
+                low:res.response[0].low.toFixed(2),
+                high:res.response[0].high.toFixed(2),
+                volume:res.response[0].volume,
+                prevClose:res.response[0].prevClose.toFixed(2),
+                changepercent : (((res.response[0].last.toFixed(2)-res.response[0].prevClose.toFixed(2))/res.response[0].prevClose.toFixed(2)) * 100).toFixed(2)
+            })
+            
+            setTradeSymbo(getQuoteTicker)
+            setTradeQty(1)
+            setTradePrice(res.response[0].last.toFixed(2))
+            drawChart();
+            setShowQuoteDetails(true)
+        //}
+    }
     }
 
     

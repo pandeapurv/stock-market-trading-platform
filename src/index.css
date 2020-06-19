@@ -334,3 +334,20 @@ font-size: 2.0rem;
   border: 1px solid #dddddd;
   text-align: left;
 }
+
+
+.bars.up-day path {
+  stroke: #03a678;
+}
+
+.bars.down-day path {
+  stroke: #c0392b;
+}
+
+.bars.up-day rect {
+  fill: #03a678;
+}
+
+.bars.down-day rect {
+  fill: #c0392b;
+}

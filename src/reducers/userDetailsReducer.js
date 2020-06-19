@@ -82,6 +82,13 @@ export const userDetailsReducer = (state, action) => {
                 ...state,
                 assetWatchList : action.user.assetWatchList,
             }
+
+        // case 'REMOVEFROMASSETWATCHLIST' :
+        // console.log('REMOVEFROMASSETWATCHLIST',action.user.watchlistDetailTicker)
+        // return {
+        //     ...state,
+        //     assetWatchList : state.assetWatchList.filter(el => el.symbol !== action.user.watchlistDetailTicker)
+        // }
         
         case 'ADDTOASSETDETAILS' : 
             return {
