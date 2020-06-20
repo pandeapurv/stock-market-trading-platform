@@ -109,7 +109,10 @@ setInterval( async function(){
            //const response = await tiingoapis.getStockQuote(ticker,apiKey);
            const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
            console.log(ticker)
+           if(response.detail === undefined){
             io.sockets.emit(key, response);
+           }
+            
             //io.sockets.in(key).emit(ticker,'response')
         }    
     }
@@ -132,7 +135,10 @@ setInterval( async function(){
            //const response = await tiingoapis.getStockQuote(ticker,apiKey);
            const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
            console.log('assset',ticker)
-            io.sockets.emit(`asset-${key}`, response);
+           if(response.detail === undefined){
+                io.sockets.emit(`asset-${key}`, response);
+           }
+            
             //io.sockets.in(key).emit(ticker,'response')
         }    
     }

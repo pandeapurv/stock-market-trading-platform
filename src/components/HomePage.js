@@ -6,9 +6,6 @@ import TradePage from './TradePage'
 import PortfolioPage from './PortfolioPage'
 import {BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
 import {ProtectedRoute} from './ProtectedRoute'
-// import { select,line, curveCardinal,
-//     scaleTime, scaleLinear } from "d3";
-
 import AppBar from "@material-ui/core/AppBar";
 import Tabs from "@material-ui/core/Tabs";
 import Tab from "@material-ui/core/Tab";
@@ -47,7 +44,6 @@ const HomePage = (props) => {
     const [tradePrice,setTradePrice] = useState(0)
     const svgRef = useRef();
     const [data, setData] = useState([25, 30, 45, 60, 20, 65, 75]);
-    //const [selectedTab, setSelectedTab] = React.useState(0);
     const [selectedTimeperiod,setSelectedTimeperiod] = useState('1year')
 
     const [historicalDataObject,setHistoricalDataObject] = useState({})

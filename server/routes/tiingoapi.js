@@ -12,14 +12,8 @@ module.exports = {
         
 
         return new Promise(function (resolve, reject) {
-            request(requestOptions, function (error, res, body) {
-              if (!error && res.statusCode == 200) {
-                console.log(typeof body)
-                //let bres = body.json()
-                resolve(JSON.parse(body));
-              } else {
-                reject(error);
-              }
+            request(requestOptions, function (error, res, body) {             
+                resolve(JSON.parse(body));             
             });
           });
 
@@ -115,6 +109,24 @@ module.exports = {
       
   },
 
+  getOneDayQuote: function(ticker,apiKey,startDate){
+    var requestOptions = {
+        'url':`${IEX_REST_API}/${ticker}/prices?startDate=${startDate}&resampleFreq=5min&columns=open,high,low,close,volume&token=${apiKey}`,
+        'headers': {
+            'Content-Type': 'application/json'
+            }
+    };
+    
+
+    return new Promise(function (resolve, reject) {
+        request(requestOptions, function (error, res, body) {             
+            resolve(JSON.parse(body));             
+        });
+      });
+
+    
+},
+
   dummyGetOneDayQuote : function(ticker,apiKey,startDate){
     let DummyStockQuotes = {
       AAPL: [{"date":"2020-06-19T13:30:00.000Z","open":354.5,"high":356.12,"low":354.5,"close":356.1,"volume":10992.0},{"date":"2020-06-19T13:35:00.000Z","open":356.02,"high":356.18,"low":355.05,"close":356.085,"volume":3534.0},{"date":"2020-06-19T13:40:00.000Z","open":356.25,"high":356.55,"low":356.085,"close":356.19,"volume":1023.0},{"date":"2020-06-19T13:45:00.000Z","open":356.34,"high":356.34,"low":355.72,"close":356.05,"volume":3047.0},{"date":"2020-06-19T13:50:00.000Z","open":355.81,"high":355.95,"low":355.72,"close":355.79,"volume":872.0},{"date":"2020-06-19T13:55:00.000Z","open":355.755,"high":355.755,"low":354.96,"close":354.97,"volume":2086.0},{"date":"2020-06-19T14:00:00.000Z","open":355.05,"high":355.22,"low":354.725,"close":355.145,"volume":8794.0},{"date":"2020-06-19T14:05:00.000Z","open":355.185,"high":355.725,"low":354.97,"close":355.695,"volume":5853.0},{"date":"2020-06-19T14:10:00.000Z","open":355.775,"high":355.775,"low":355.15,"close":355.33,"volume":7648.0},{"date":"2020-06-19T14:15:00.000Z","open":355.365,"high":355.365,"low":354.77,"close":354.8,"volume":11072.0},{"date":"2020-06-19T14:20:00.000Z","open":354.74,"high":354.74,"low":354.16,"close":354.585,"volume":6111.0},{"date":"2020-06-19T14:25:00.000Z","open":354.48,"high":354.7,"low":354.4,"close":354.63,"volume":1660.0},{"date":"2020-06-19T14:30:00.000Z","open":354.46,"high":354.495,"low":354.0,"close":354.33,"volume":3279.0},{"date":"2020-06-19T14:35:00.000Z","open":354.365,"high":354.535,"low":354.24,"close":354.275,"volume":2337.0},{"date":"2020-06-19T14:40:00.000Z","open":354.08,"high":354.22,"low":353.73,"close":354.06,"volume":6765.0},{"date":"2020-06-19T14:45:00.000Z","open":354.07,"high":354.07,"low":353.47,"close":353.78,"volume":5383.0},{"date":"2020-06-19T14:50:00.000Z","open":353.755,"high":354.08,"low":353.42,"close":354.08,"volume":3747.0},{"date":"2020-06-19T14:55:00.000Z","open":354.14,"high":354.19,"low":353.84,"close":354.025,"volume":2494.0},{"date":"2020-06-19T15:00:00.000Z","open":354.13,"high":354.77,"low":354.13,"close":354.77,"volume":2272.0},{"date":"2020-06-19T15:05:00.000Z","open":354.785,"high":355.01,"low":354.53,"close":354.54,"volume":887.0},{"date":"2020-06-19T15:10:00.000Z","open":354.61,"high":354.65,"low":354.05,"close":354.05,"volume":1042.0},{"date":"2020-06-19T15:15:00.000Z","open":353.975,"high":354.03,"low":353.43,"close":353.45,"volume":4310.0},{"date":"2020-06-19T15:20:00.000Z","open":353.07,"high":354.21,"low":353.07,"close":353.77,"volume":1996.0},{"date":"2020-06-19T15:25:00.000Z","open":353.87,"high":353.87,"low":353.395,"close":353.72,"volume":1638.0},{"date":"2020-06-19T15:30:00.000Z","open":353.62,"high":353.745,"low":353.39,"close":353.395,"volume":1063.0},{"date":"2020-06-19T15:35:00.000Z","open":353.43,"high":353.505,"low":353.06,"close":353.35,"volume":1078.0},{"date":"2020-06-19T15:40:00.000Z","open":353.36,"high":353.565,"low":353.01,"close":353.14,"volume":3500.0},{"date":"2020-06-19T15:45:00.000Z","open":353.23,"high":353.44,"low":353.17,"close":353.35,"volume":1322.0},{"date":"2020-06-19T15:50:00.000Z","open":353.325,"high":353.52,"low":353.295,"close":353.51,"volume":2349.0},{"date":"2020-06-19T15:55:00.000Z","open":353.2,"high":353.34,"low":353.06,"close":353.235,"volume":1369.0},{"date":"2020-06-19T16:00:00.000Z","open":353.29,"high":353.29,"low":352.89,"close":352.89,"volume":2638.0},{"date":"2020-06-19T16:05:00.000Z","open":353.01,"high":353.025,"low":352.29,"close":352.475,"volume":2262.0},{"date":"2020-06-19T16:10:00.000Z","open":352.485,"high":352.74,"low":349.95,"close":349.95,"volume":4271.0},{"date":"2020-06-19T16:15:00.000Z","open":349.94,"high":350.93,"low":348.54,"close":348.54,"volume":30180.0},{"date":"2020-06-19T16:20:00.000Z","open":348.69,"high":350.29,"low":348.15,"close":348.56,"volume":12319.0},{"date":"2020-06-19T16:25:00.000Z","open":349.09,"high":349.56,"low":348.71,"close":349.515,"volume":7808.0},{"date":"2020-06-19T16:30:00.000Z","open":349.6,"high":350.11,"low":349.535,"close":349.89,"volume":1548.0},{"date":"2020-06-19T16:35:00.000Z","open":350.03,"high":350.33,"low":349.365,"close":349.49,"volume":5258.0},{"date":"2020-06-19T16:40:00.000Z","open":349.44,"high":350.025,"low":348.835,"close":349.86,"volume":3876.0},{"date":"2020-06-19T16:45:00.000Z","open":349.75,"high":350.575,"low":349.55,"close":350.575,"volume":2306.0},{"date":"2020-06-19T16:50:00.000Z","open":350.545,"high":351.05,"low":350.545,"close":350.61,"volume":4134.0},{"date":"2020-06-19T16:55:00.000Z","open":350.34,"high":351.12,"low":350.32,"close":350.965,"volume":1625.0},{"date":"2020-06-19T17:00:00.000Z","open":350.97,"high":350.97,"low":350.025,"close":350.025,"volume":4033.0},{"date":"2020-06-19T17:05:00.000Z","open":350.335,"high":350.335,"low":349.85,"close":349.99,"volume":3193.0},{"date":"2020-06-19T17:10:00.000Z","open":350.17,"high":350.3,"low":349.92,"close":350.02,"volume":2700.0},{"date":"2020-06-19T17:15:00.000Z","open":349.885,"high":349.885,"low":349.21,"close":349.23,"volume":2698.0},{"date":"2020-06-19T17:20:00.000Z","open":349.18,"high":349.335,"low":348.77,"close":348.77,"volume":3708.0},{"date":"2020-06-19T17:25:00.000Z","open":348.71,"high":349.085,"low":348.64,"close":348.645,"volume":7967.0},{"date":"2020-06-19T17:30:00.000Z","open":348.69,"high":348.69,"low":347.48,"close":347.57,"volume":4216.0},{"date":"2020-06-19T17:35:00.000Z","open":347.54,"high":349.04,"low":347.54,"close":349.04,"volume":4406.0},{"date":"2020-06-19T17:40:00.000Z","open":348.835,"high":348.97,"low":348.64,"close":348.845,"volume":1763.0},{"date":"2020-06-19T17:45:00.000Z","open":349.03,"high":349.2,"low":348.01,"close":348.375,"volume":2731.0},{"date":"2020-06-19T17:50:00.000Z","open":348.495,"high":348.51,"low":347.97,"close":347.97,"volume":2161.0},{"date":"2020-06-19T17:55:00.000Z","open":348.365,"high":348.365,"low":347.2,"close":347.2,"volume":2858.0},{"date":"2020-06-19T18:00:00.000Z","open":347.295,"high":347.92,"low":347.295,"close":347.72,"volume":3313.0},{"date":"2020-06-19T18:05:00.000Z","open":347.66,"high":347.66,"low":346.29,"close":347.03,"volume":2186.0},{"date":"2020-06-19T18:10:00.000Z","open":346.95,"high":346.95,"low":346.38,"close":346.5,"volume":818.0},{"date":"2020-06-19T18:15:00.000Z","open":347.04,"high":347.04,"low":345.74,"close":346.41,"volume":1940.0},{"date":"2020-06-19T18:20:00.000Z","open":346.29,"high":346.88,"low":346.29,"close":346.825,"volume":1459.0},{"date":"2020-06-19T18:25:00.000Z","open":347.005,"high":347.005,"low":345.84,"close":345.84,"volume":1726.0},{"date":"2020-06-19T18:30:00.000Z","open":345.65,"high":346.675,"low":345.46,"close":346.675,"volume":2775.0},{"date":"2020-06-19T18:35:00.000Z","open":346.415,"high":347.19,"low":346.415,"close":346.97,"volume":5324.0},{"date":"2020-06-19T18:40:00.000Z","open":346.9,"high":346.9,"low":346.35,"close":346.48,"volume":2719.0},{"date":"2020-06-19T18:45:00.000Z","open":346.395,"high":346.84,"low":346.35,"close":346.43,"volume":2332.0},{"date":"2020-06-19T18:50:00.000Z","open":346.64,"high":347.14,"low":346.23,"close":347.14,"volume":5472.0},{"date":"2020-06-19T18:55:00.000Z","open":347.065,"high":347.69,"low":347.0,"close":347.42,"volume":3172.0},{"date":"2020-06-19T19:00:00.000Z","open":347.36,"high":347.365,"low":346.93,"close":346.975,"volume":6380.0},{"date":"2020-06-19T19:05:00.000Z","open":346.8,"high":346.9,"low":346.585,"close":346.625,"volume":3950.0},{"date":"2020-06-19T19:10:00.000Z","open":346.72,"high":347.475,"low":346.21,"close":347.475,"volume":10654.0},{"date":"2020-06-19T19:15:00.000Z","open":347.47,"high":348.58,"low":347.47,"close":348.44,"volume":6137.0},{"date":"2020-06-19T19:20:00.000Z","open":348.49,"high":348.805,"low":347.97,"close":348.655,"volume":11887.0},{"date":"2020-06-19T19:25:00.000Z","open":348.74,"high":348.855,"low":347.735,"close":347.735,"volume":8208.0},{"date":"2020-06-19T19:30:00.000Z","open":347.815,"high":348.15,"low":347.705,"close":348.035,"volume":13168.0},{"date":"2020-06-19T19:35:00.000Z","open":348.01,"high":348.03,"low":347.545,"close":347.64,"volume":8805.0},{"date":"2020-06-19T19:40:00.000Z","open":347.64,"high":348.545,"low":347.635,"close":348.515,"volume":19530.0},{"date":"2020-06-19T19:45:00.000Z","open":348.44,"high":348.73,"low":347.23,"close":347.26,"volume":12559.0},{"date":"2020-06-19T19:50:00.000Z","open":348.45,"high":350.32,"low":348.275,"close":349.67,"volume":58853.0},{"date":"2020-06-19T19:55:00.000Z","open":349.94,"high":350.185,"low":349.42,"close":349.55,"volume":28069.0}]
@@ -127,6 +139,22 @@ module.exports = {
       resolve(DummyStockQuotes[ticker])
     })
   },
+
+  getXDayQuote :function(ticker,apiKey,startDate){
+    var requestOptions = {
+        'url':`${IEX_EOD_API}${ticker}/prices?startDate=${startDate}&token=${apiKey}`,
+        'headers': {
+            'Content-Type': 'application/json'
+            }
+    }
+    return new Promise(function (resolve, reject) {
+      request(requestOptions, function (error, res, body) {             
+          resolve(JSON.parse(body));             
+      });
+    });
+
+  
+},
 
   dummyGetFiveDayQuote : function(ticker,apiKey,startDate){
     let DummyStockQuotes = {
