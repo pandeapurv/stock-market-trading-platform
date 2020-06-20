@@ -8,7 +8,25 @@ import {BrowserRouter as Router, Route, Switch, Link} from 'react-router-dom'
 import {ProtectedRoute} from './ProtectedRoute'
 // import { select,line, curveCardinal,
 //     scaleTime, scaleLinear } from "d3";
+
+import AppBar from "@material-ui/core/AppBar";
+import Tabs from "@material-ui/core/Tabs";
+import Tab from "@material-ui/core/Tab";
+import Box from "@material-ui/core/Box";
+import Typography from "@material-ui/core/Typography";
+import { makeStyles } from '@material-ui/core/styles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import Paper from '@material-ui/core/Paper';
+import clsx from 'clsx';
+
 import * as d3 from "d3"; 
+
+
 
 const HomePage = (props) => {
     const {user, dispatch  } = useContext(UserContext);
@@ -27,7 +45,26 @@ const HomePage = (props) => {
     const [tradePrice,setTradePrice] = useState(0)
     const svgRef = useRef();
     const [data, setData] = useState([25, 30, 45, 60, 20, 65, 75]);
-    
+    //const [selectedTab, setSelectedTab] = React.useState(0);
+    const [selectedTimeperiod,setSelectedTimeperiod] = useState('1day')
+
+    const [historicalDataObject,setHistoricalDataObject] = useState({})
+
+    const useStyles = makeStyles({
+        table: {
+         
+        },
+
+        selectedCell: {
+            borderBottom : '1px solid black',
+        },
+
+        headweight: {
+            fontWeight: 700,
+        }
+
+      });
+      const classes = useStyles();
 
     React.useEffect(() => {
         userRef.current = user;
@@ -46,6 +83,7 @@ const HomePage = (props) => {
 
     /*
     D3 start chart-container
+    https://www.freecodecamp.org/news/how-to-build-historical-price-charts-with-d3-js-72214aaf6ba3/
     */
 
     // credits: https://brendansudol.com/writing/responsive-d3
@@ -92,22 +130,44 @@ const HomePage = (props) => {
         });
       };
 
+      
+
     useEffect(()=> {
         console.log('getQuoteTicker',getQuoteTicker)
         let { apiKey } =  userRef.current
         const gethistoricalquote = async () => {
             if(showQuoteDetails){
-                let response = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/${getQuoteTicker}/${apiKey}/2019-12-15`)
-                //if(response !== undefined && response!==''){
+                // let response = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/${getQuoteTicker}/${apiKey}/2019-12-15`)
+                // //if(response !== undefined && response!==''){
                    
                 
-                let res = await response.json()
+                // let res = await response.json()
                 
-                console.log('res',res)
-                console.log('typeofres', typeof res)
-                console.log(res.response[0])
-                const data = res.response
-                console.log('data',data)
+                // console.log('res',res)
+                // console.log('typeofres', typeof res)
+                // console.log(res.response[0])
+                // const data = res.response
+                // console.log('data',data)
+                console.log('historicalDataObject',historicalDataObject)
+                console.log('selectedTimeperiod',selectedTimeperiod)
+                let data = [];
+                if(selectedTimeperiod === '1day'){
+                     data = historicalDataObject.oneDayData
+                }else if(selectedTimeperiod === '5days'){
+                    console.log('indise 5days',historicalDataObject.oneDayData)
+                      data = historicalDataObject.fiveDaysData
+                }else if(selectedTimeperiod === '1month'){
+                      data = historicalDataObject.oneMonthData
+                }else if(selectedTimeperiod === '6months'){
+                      data = historicalDataObject.sixMonthsData
+                }else {
+                      data = historicalDataObject.yearData
+                }
+
+                console.log('apurv data',data)
+                d3.select('.mainchart')
+                .remove();
+               
 
                 const dataSet = data.map(el =>(
                     Object.assign({}, {
@@ -316,140 +376,113 @@ const HomePage = (props) => {
 
 
                 // renders x and y crosshair
-  const focus = svg
-  .append('g')
-  .attr('class', 'focus')
-  .style('display', 'none');
+                const focus = svg
+                .append('g')
+                .attr('class', 'focus')
+                .style('display', 'none');
 
-focus.append('circle').attr('r', 4.5);
-focus.append('line').classed('x', true);
-focus.append('line').classed('y', true);
+                focus.append('circle').attr('r', 4.5);
+                focus.append('line').classed('x', true);
+                focus.append('line').classed('y', true);
 
-svg
-  .append('rect')
-  .attr('class', 'overlay')
-  .attr('width', width )
-  .attr('height', height +10)
-  .on('mouseover', () => focus.style('display', null))
-  .on('mouseout', () => focus.style('display', 'none'))
-  .on('mousemove', generateCrosshair);
+                svg
+                .append('rect')
+                .attr('class', 'overlay')
+                .attr('width', width )
+                .attr('height', height +10)
+                .on('mouseover', () => focus.style('display', null))
+                .on('mouseout', () => focus.style('display', 'none'))
+                .on('mousemove', generateCrosshair);
 
-d3.select('.overlay').style('fill', 'none');
-d3.select('.overlay').style('pointer-events', 'all');
+                d3.select('.overlay').style('fill', 'none');
+                d3.select('.overlay').style('pointer-events', 'all');
 
-d3.selectAll('.focus line').style('fill', 'none');
-d3.selectAll('.focus line').style('stroke', '#67809f');
-d3.selectAll('.focus line').style('stroke-width', '1.5px');
-d3.selectAll('.focus line').style('stroke-dasharray', '3 3');
+                d3.selectAll('.focus line').style('fill', 'none');
+                d3.selectAll('.focus line').style('stroke', '#67809f');
+                d3.selectAll('.focus line').style('stroke-width', '1.5px');
+                d3.selectAll('.focus line').style('stroke-dasharray', '3 3');
 
-//returs insertion point
-const bisectDate = d3.bisector(d => d.date).left;
+                //returs insertion point
+                const bisectDate = d3.bisector(d => d.date).left;
 
-/* mouseover function to generate crosshair */
-function generateCrosshair() {
-  //returns corresponding value from the domain
-  const correspondingDate = xScale.invert(d3.mouse(this)[0]);
-  //gets insertion point
-  const i = bisectDate(dataSet, correspondingDate, 1);
-  const d0 = dataSet[i - 1];
-  const d1 = dataSet[i];
-  const currentPoint =
-    correspondingDate - d0['date'] > d1['date'] - correspondingDate ? d1 : d0;
-  focus.attr(
-    'transform',
-    `translate(${xScale(currentPoint['date'])}, ${yScale(
-      currentPoint['close']
-    )})`
-  );
+                /* mouseover function to generate crosshair */
+                function generateCrosshair() {
+                //returns corresponding value from the domain
+                const correspondingDate = xScale.invert(d3.mouse(this)[0]);
+                //gets insertion point
+                const i = bisectDate(dataSet, correspondingDate, 1);
+                const d0 = dataSet[i - 1];
+                const d1 = dataSet[i];
+                const currentPoint =
+                    correspondingDate - d0['date'] > d1['date'] - correspondingDate ? d1 : d0;
+                focus.attr(
+                    'transform',
+                    `translate(${xScale(currentPoint['date'])}, ${yScale(
+                    currentPoint['close']
+                    )})`
+                );
 
-  focus
-    .select('line.x')
-    .attr('x1', 0)
-    .attr('x2', width - xScale(currentPoint['date']))
-    .attr('y1', 0)
-    .attr('y2', 0);
+                focus
+                    .select('line.x')
+                    .attr('x1', 0)
+                    .attr('x2', width - xScale(currentPoint['date']))
+                    .attr('y1', 0)
+                    .attr('y2', 0);
 
-  focus
-    .select('line.y')
-    .attr('x1', 0)
-    .attr('x2', 0)
-    .attr('y1', 0)
-    .attr('y2', height - yScale(currentPoint['close']));
+                focus
+                    .select('line.y')
+                    .attr('x1', 0)
+                    .attr('x2', 0)
+                    .attr('y1', 0)
+                    .attr('y2', height - yScale(currentPoint['close']));
 
-  // updates the legend to display the date, open, close, high, low, and volume of the selected mouseover area
-  updateLegends(currentPoint);
-}
+                // updates the legend to display the date, open, close, high, low, and volume of the selected mouseover area
+                updateLegends(currentPoint);
+                }
 
-/* Legends */
-const updateLegends = currentData => {
-  d3.selectAll('.lineLegend').remove();
+                /* Legends */
+                const updateLegends = currentData => {
+                d3.selectAll('.lineLegend').remove();
 
-  const legendKeys = Object.keys(data[0]);
-  
-  console.log('legendKeys',legendKeys)
-  const lineLegend = svg
-    .selectAll('.lineLegend')
-    .data(["date","close","high","low","open", "volume"]) 
-    .enter()
-    .append('g')
-    .attr('class', 'lineLegend')
-    .attr('transform', (d, i) => {
-      return `translate(0, ${i * 20})`;
-    });
-  lineLegend
-    .append('text')
-    .text(d => {
-      if (d === 'date') {
-        return `${d}: ${currentData[d].toLocaleDateString()}`;
-      } else if (
-        d === 'high' ||
-        d === 'low' ||
-        d === 'open' ||
-        d === 'close'
-      ) {
-        return `${d}: ${currentData[d].toFixed(2)}`;
-      } else {
-        return `${d}: ${currentData[d]}`;
-      }
-    })
-    .style('fill', 'black')
-    .attr('transform', 'translate(25,15)'); //align texts with boxes
-};
+                const legendKeys = Object.keys(data[0]);
+                
+                console.log('legendKeys',legendKeys)
+                const lineLegend = svg
+                    .selectAll('.lineLegend')
+                    .data(["date","close","high","low","open", "volume"]) 
+                    .enter()
+                    .append('g')
+                    .attr('class', 'lineLegend')
+                    .attr('transform', (d, i) => {
+                    return `translate(0, ${i * 20})`;
+                    });
+                lineLegend
+                    .append('text')
+                    .text(d => {
+                    if (d === 'date') {
+                        return `${d}: ${currentData[d].toLocaleDateString()}`;
+                    } else if (
+                        d === 'high' ||
+                        d === 'low' ||
+                        d === 'open' ||
+                        d === 'close'
+                    ) {
+                        return `${d}: ${currentData[d].toFixed(2)}`;
+                    } else {
+                        return `${d}: ${currentData[d]}`;
+                    }
+                    })
+                    .style('fill', 'black')
+                    .attr('transform', 'translate(25,15)'); //align texts with boxes
+                };
 
-            }
-        }
-        
-        gethistoricalquote()
-        
-        
-                    
-        //  console.log('svg',svg)
-
-        //  console.log(svg
-        //     .selectAll("circle")
-        //     .data(data))
-        //     svg
-        //     .selectAll("circle")
-        //     .data(data)
-        //     .join("circle")
-        //     .attr("r", value => value)
-        //     .attr("cx", value => value * 2)
-        //     .attr("cy", value => value * 2)
-        //     .attr("stroke", "red");
-        // const myLine = line()
-        // .x((value, index) => index * 50)
-        // .y(value => 150 - value)
-        // .curve(curveCardinal);
-        // svg
-        // .style("width",'100%')
-        // .selectAll("path")
-        // .data([data])
-        // .join("path")
-        // .attr("d", value => myLine(value))
-        // .attr("fill", "none")
-        // .attr("stroke", "blue");
-    //}
-    },[showQuoteDetails])
+                            }
+                        }
+                        
+                        gethistoricalquote()
+                        
+                        
+    },[showQuoteDetails, selectedTimeperiod])
 
    const drawChart = () => {
        
@@ -547,6 +580,37 @@ __proto__: Object
                 prevClose:res.response[0].prevClose.toFixed(2),
                 changepercent : (((res.response[0].last.toFixed(2)-res.response[0].prevClose.toFixed(2))/res.response[0].prevClose.toFixed(2)) * 100).toFixed(2)
             })
+
+            //// historical data
+
+            let historicalData = new Object();
+
+            let oneDayDataResponse = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/${getQuoteTicker}/${apiKey}/2019-12-15`) 
+            let oneDayResponseJson = await oneDayDataResponse.json()
+
+            let fiveDaysDataResponse = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/AMZN/${apiKey}/2019-12-15`) 
+            let fiveDaysResponseJson = await fiveDaysDataResponse.json()
+
+            let oneMonthDataResponse = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/AAPL/${apiKey}/2019-12-15`) 
+            let oneMonthResponseJson = await oneMonthDataResponse.json()
+
+            let sixMonthsDataResponse = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/${getQuoteTicker}/${apiKey}/2019-12-15`) 
+            let sixMonthsDataResponseJson = await sixMonthsDataResponse.json()
+
+            let yearDataResponse = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/${getQuoteTicker}/${apiKey}/2019-12-15`) 
+            let yearDataResponseJson = await yearDataResponse.json()
+            
+            historicalData.oneDayData = oneDayResponseJson.response
+            historicalData.fiveDaysData = fiveDaysResponseJson.response
+            historicalData.oneMonthData = oneMonthResponseJson.response
+            historicalData.sixMonthsData = sixMonthsDataResponseJson.response
+            historicalData.yearData= yearDataResponseJson.response
+
+            setHistoricalDataObject(historicalData)
+            console.log('data',data)
+
+
+            ////
             
             setTradeSymbo(getQuoteTicker)
             setTradeQty(1)
@@ -557,6 +621,7 @@ __proto__: Object
     }
     }
 
+  
     
     const addToWatchList = () => {
         console.log(getQuoteDetails.symbol)
@@ -608,6 +673,11 @@ __proto__: Object
     const tradeStock = () => {
         setShowTradePage(true)
         setShowPortFolioPage(false)
+    }
+
+    const changeTimePeriod = (timeperiod) => {
+        console.log('timeperiod',timeperiod)
+        setSelectedTimeperiod(timeperiod)
     }
      
     return ( 
@@ -704,10 +774,67 @@ __proto__: Object
                 </div>
             </div>}
             
-            {showQuoteDetails && 
-            <div className="chart-container" ref={svgRef} >
-                {/* <svg ref={svgRef}></svg> */}
-            </div>}
+
+            {/* {showQuoteDetails && 
+            <div className="chart-container"  >
+                <AppBar position="static" color="default">
+                    <Tabs value={selectedTab}
+                        onChange={changeTimePeriod}
+                        indicatorColor="primary"
+                        textColor="primary"
+                        variant="fullWidth"
+                        aria-label="full width tabs example" >
+                        <Tab label="Item One"  />
+                        <Tab label="Item Two"/>
+                    </Tabs>
+                </AppBar>
+                <TabPanel   value={selectedTab} index={0} >
+                    <div className="chart-graph-container" ref={svgRef} ></div>
+                </TabPanel>
+                
+               
+            </div>} */}
+
+
+            {showQuoteDetails &&  <TableContainer className="chart-container" component={Paper}>
+      <Table className={classes.table} size="small" aria-label="a dense table">
+        <TableHead className={classes.headweight}>
+          <TableRow>
+            <TableCell align="left"
+            
+            className={clsx("graph-table-cell", selectedTimeperiod === '1day' && classes.selectedCell)}
+            //className="graph-table-cell"
+            onClick={() => changeTimePeriod('1day')}
+            >1 day</TableCell>
+            <TableCell align="left"
+            className={ clsx("graph-table-cell",selectedTimeperiod === '5days' && classes.selectedCell)}
+            onClick={() => changeTimePeriod('5days')}>5 days</TableCell>
+            <TableCell align="left"
+            className={ clsx("graph-table-cell",selectedTimeperiod === '1month' && classes.selectedCell)}
+            onClick={() => changeTimePeriod('1month')}>1 month</TableCell>
+            <TableCell align="left"
+            className={ clsx("graph-table-cell",selectedTimeperiod === '6months' && classes.selectedCell)}
+            onClick={() => changeTimePeriod('6months')}>6 months</TableCell>
+            <TableCell align="left"
+            className={ clsx("graph-table-cell",selectedTimeperiod === '1year' && classes.selectedCell)}
+            onClick={() => changeTimePeriod('1year')}>1 year</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+
+            {/* <TableRow key={1}>
+              <TableCell rowSpan={2} colSpan={5} align="right">
+              
+              </TableCell>
+            </TableRow> */}
+
+        </TableBody>
+      </Table>
+      <div className="graph-container" ref={svgRef} >
+                </div>
+    </TableContainer>}
+
+
         </div>}
         
     </div>
