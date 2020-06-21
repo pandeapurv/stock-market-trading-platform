@@ -709,7 +709,7 @@ __proto__: Object
         let day = workday.day();
         console.log('day',day)
         let diff = 0; 
-        if(day == 7){
+        if(day == 0){
             diff = 2;
         }
         if(day == 6){
@@ -732,7 +732,7 @@ __proto__: Object
         setShowQuoteDetails(false)
         setCompareStock(false)
         let response = await fetch(`http://localhost:5000/api/tiingo/stock/quote/${getQuoteTicker}/${apiKey}`)
-        if(response !== undefined && response!=='' ){
+        if(response !== undefined && response!=='' && response.detail === undefined){
             
             console.log('response',response)
             console.log(typeof response)
@@ -767,7 +767,8 @@ __proto__: Object
 
             let oneDayDataResponse = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/oneday/${getQuoteTicker}/${apiKey}/${workday}`) 
             let oneDayResponseJson = await oneDayDataResponse.json()
-
+            console.log('oneDayDataResponse',oneDayDataResponse)
+            console.log('oneDayResponseJson',oneDayResponseJson)
             let fiveDaysDataResponse = await fetch(`http://localhost:5000/api/tiingo/stock/historicalquote/fivedays/${getQuoteTicker}/${apiKey}/${fifthday}`) 
             let fiveDaysResponseJson = await fiveDaysDataResponse.json()
 
@@ -893,7 +894,7 @@ __proto__: Object
                         onClick={() => showHomePage()}>Home</li>
                         <li className="nav-tabs-li" 
                         onClick={() => showPortFolio()}>Portfolio</li>
-                        <li className="nav-tabs-li">Settings</li>
+                        {/* <li className="nav-tabs-li">Settings</li> */}
                     </ul>
                     </nav>
             </div>

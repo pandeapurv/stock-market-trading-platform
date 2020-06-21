@@ -43,9 +43,9 @@ const LoginPage = (props) => {
         <div className="login-page">
             <div className="intro"></div>
             <div className="main-content">
-                <p> This applications shows price charts of stocks, currencies and indexes. 
-                You would need an tiingo api key to login. In setting tabs you can 
-                control frequencey of data fetch depending on your plan
+                <p> This applications shows techincal charts and gives you virtual money to trade. 
+                    Account Data will be refreshed at every login.
+                You would need an tiingo api key to login.
                 </p>          
                 <form className="login-form" onSubmit={handleSubmit}>
                     <input type="text" className="login-form-name" required placeholder="first name"

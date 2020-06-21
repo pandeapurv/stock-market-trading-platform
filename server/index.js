@@ -106,8 +106,8 @@ setInterval( async function(){
             //console.log('else',key)
             let ticker = value[0]
             let apiKey = value[1]
-           //const response = await tiingoapis.getStockQuote(ticker,apiKey);
-           const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
+           const response = await tiingoapis.getStockQuote(ticker,apiKey);
+           //const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
            console.log(ticker)
            if(response.detail === undefined){
             io.sockets.emit(key, response);
@@ -132,8 +132,8 @@ setInterval( async function(){
             //console.log('else',key)
             let ticker = value[0]
             let apiKey = value[1]
-           //const response = await tiingoapis.getStockQuote(ticker,apiKey);
-           const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
+           const response = await tiingoapis.getStockQuote(ticker,apiKey);
+           //const response = await tiingoapis.dummyGetStockQuote(ticker,apiKey);
            console.log('assset',ticker)
            if(response.detail === undefined){
                 io.sockets.emit(`asset-${key}`, response);
